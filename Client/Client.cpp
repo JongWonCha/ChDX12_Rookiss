@@ -10,6 +10,9 @@
 
 // 전역 변수:
 WindowInfo GWindowInfo;
+DWORD g_frameCount = 0;
+ULONGLONG   g_prvFrameCheckTick = 0;
+ULONGLONG   g_prvUpdateTick = 0;
 
 HINSTANCE hInst;                                // 현재 인스턴스입니다.
 WCHAR szTitle[MAX_LOADSTRING];                  // 제목 표시줄 텍스트입니다.
@@ -45,8 +48,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_CLIENT));
 
     MSG msg;
-    GWindowInfo.width = 800;
-    GWindowInfo.height = 600;
+    GWindowInfo.width = 1904;
+    GWindowInfo.height = 964;
     GWindowInfo.windowed = true;
 
     unique_ptr<Game> game = make_unique<Game>();
@@ -67,6 +70,25 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
             }
         }
         game->Update();
+
+        g_frameCount++;
+
+        ULONGLONG curTick = GetTickCount64();
+
+        if (curTick - g_prvUpdateTick > 16)
+            g_prvUpdateTick = curTick;
+
+        if (curTick - g_prvFrameCheckTick > 1000)
+        {
+            g_prvFrameCheckTick = curTick;
+
+            WCHAR wchTxt[64];
+            swprintf_s(wchTxt, L"FPS : %u", g_frameCount);
+            SetWindowText(GWindowInfo.hwnd, wchTxt);
+
+            g_frameCount = 0;
+        }
+
     }
 
     return (int) msg.wParam;
