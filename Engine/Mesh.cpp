@@ -2,9 +2,9 @@
 #include "Mesh.h"
 #include "Engine.h"
 
-void Mesh::Init(vector<Vertex>& vec)
+void Mesh::Init(const vector<Vertex>& vertexVec, const vector<WORD>& indexVec)
 {
-	_vertexCount = static_cast<uint32>(vec.size());
+	_vertexCount = static_cast<uint32>(vertexVec.size());
 
 	D3D12_COMMAND_QUEUE_DESC queueDesc = {};
 	queueDesc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
@@ -22,7 +22,9 @@ void Mesh::Init(vector<Vertex>& vec)
 
 	_hFenceEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
 
-	CreateVertexBuffer(vec);
+	CreateVertexBuffer(vertexVec);
+	CreateIndexBuffer(indexVec);
+
 }
 
 void Mesh::CreateVertexBuffer(const vector<Vertex>& vec)
@@ -91,6 +93,87 @@ void Mesh::CreateVertexBuffer(const vector<Vertex>& vec)
 	}
 }
 
+void Mesh::CreateIndexBuffer(const vector<WORD>& vec)
+{
+	HRESULT hr = S_OK;
+
+	ComPtr<ID3D12Resource>	pUploadBuffer = nullptr;
+	UINT					indexBufferSize = sizeof(WORD) * vec.size();
+
+	hr = DEVICE->CreateCommittedResource(
+		&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT),
+		D3D12_HEAP_FLAG_NONE,
+		&CD3DX12_RESOURCE_DESC::Buffer(indexBufferSize),
+		D3D12_RESOURCE_STATE_COMMON,
+		nullptr,
+		IID_PPV_ARGS(&_indexBuffer)
+	);
+
+	if (FAILED(hr))
+	{
+		__debugbreak();
+		return;
+	}
+
+	if (!vec.empty())
+	{
+		if (FAILED(_cmdAllocator->Reset()))
+			__debugbreak();
+
+		if (FAILED(_cmdList->Reset(_cmdAllocator, nullptr)))
+			__debugbreak();
+
+		hr = DEVICE->CreateCommittedResource(
+			&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD),
+			D3D12_HEAP_FLAG_NONE,
+			&CD3DX12_RESOURCE_DESC::Buffer(indexBufferSize),
+			D3D12_RESOURCE_STATE_COMMON,
+			nullptr,
+			IID_PPV_ARGS(&pUploadBuffer)
+		);
+
+		if (FAILED(hr))
+		{
+			__debugbreak();
+			return;
+		}
+
+		void* pIndexDataBegin = nullptr;
+		CD3DX12_RANGE writeRange(0, 0);
+
+		hr = pUploadBuffer->Map(0, &writeRange, reinterpret_cast<void**>(&pIndexDataBegin));
+		if (FAILED(hr))
+		{
+			__debugbreak();
+			return;
+		}
+		memcpy(pIndexDataBegin, &vec[0], indexBufferSize);
+		pUploadBuffer->Unmap(0, nullptr);
+
+		_cmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(_indexBuffer.Get(), D3D12_RESOURCE_STATE_COMMON, D3D12_RESOURCE_STATE_COPY_DEST));
+		_cmdList->CopyBufferRegion(_indexBuffer.Get(), 0, pUploadBuffer.Get(), 0, indexBufferSize);
+		_cmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(_indexBuffer.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_INDEX_BUFFER));
+
+		_cmdList->Close();
+
+		ID3D12CommandList* ppCmdLists[] = { _cmdList };
+		_cmdQueue->ExecuteCommandLists(_countof(ppCmdLists), ppCmdLists);
+
+		Fence();
+		WaitForFenceValue();
+	}
+
+	_indexBufferView.BufferLocation = _indexBuffer.Get()->GetGPUVirtualAddress();
+	_indexBufferView.SizeInBytes = indexBufferSize;
+	_indexBufferView.Format = DXGI_FORMAT_R16_UINT;
+
+	/*if (pUploadBuffer)
+	{
+		pUploadBuffer->Release();
+		pUploadBuffer = nullptr;
+	}*/
+}
+
 void Mesh::Render(const XMFLOAT4* b0, const XMFLOAT4* b1)
 {
 	shared_ptr<DescriptorPool> dp = GEngine->GetDescriptorPool();
@@ -141,7 +224,9 @@ void Mesh::Render(const XMFLOAT4* b0, const XMFLOAT4* b1)
 
 	CMD_LIST->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	CMD_LIST->IASetVertexBuffers(0, 1, &_vertexBufferView);
-	CMD_LIST->DrawInstanced(_vertexCount, 1, 0, 0);
+	CMD_LIST->IASetIndexBuffer(&_indexBufferView);
+	CMD_LIST->DrawIndexedInstanced(6, 1, 0, 0, 0);
+	//CMD_LIST->DrawInstanced(_vertexCount, 1, 0, 0);
 }
 
 UINT64 Mesh::Fence()

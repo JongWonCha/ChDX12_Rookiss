@@ -2,8 +2,9 @@
 class Mesh
 {
 public:
-	void Init(vector<Vertex>& vec);
+	void Init(const vector<Vertex>& vertexVec, const vector<WORD>& indexVec);
 	void CreateVertexBuffer(const vector<Vertex>& vec);
+	void CreateIndexBuffer(const vector<WORD>& vec);
 	void Render(const XMFLOAT4 * b0, const XMFLOAT4*  b1);
 
 	UINT64 Fence();
@@ -22,5 +23,8 @@ private:
 	ComPtr<ID3D12Resource>		_vertexBuffer;			//GPU ¸Þ¸ð¸®
 	D3D12_VERTEX_BUFFER_VIEW	_vertexBufferView = {};
 	uint32						_vertexCount = 0;
+
+	ComPtr<ID3D12Resource>		_indexBuffer;
+	D3D12_INDEX_BUFFER_VIEW		_indexBufferView = {};
 };
 

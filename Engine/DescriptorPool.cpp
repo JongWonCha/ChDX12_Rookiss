@@ -28,7 +28,11 @@ BOOL DescriptorPool::Init(ComPtr<ID3D12Device> device, UINT maxDescriptorCount)
 
 BOOL DescriptorPool::AllocDescriptorTable(D3D12_CPU_DESCRIPTOR_HANDLE* pOutCPUDescriptor, D3D12_GPU_DESCRIPTOR_HANDLE* pOutGPUDescriptor, UINT descriptorCount)
 {
-    if (_allocatedDescriptorCount + descriptorCount > _maxDescriptorCount) return FALSE;
+    if (_allocatedDescriptorCount + descriptorCount > _maxDescriptorCount)
+    {
+        __debugbreak();
+        return FALSE;
+    }
 
     *pOutCPUDescriptor = CD3DX12_CPU_DESCRIPTOR_HANDLE(_cpuDescriptorHandle, _allocatedDescriptorCount, _srvDescriptorSize);
     *pOutGPUDescriptor = CD3DX12_GPU_DESCRIPTOR_HANDLE(_gpuDescriptorHandle, _allocatedDescriptorCount, _srvDescriptorSize);
