@@ -4,7 +4,7 @@ class Mesh
 public:
 	void Init(vector<Vertex>& vec);
 	void CreateVertexBuffer(const vector<Vertex>& vec);
-	void Render();
+	void Render(const XMFLOAT4 * b0, const XMFLOAT4*  b1);
 
 	UINT64 Fence();
 	void WaitForFenceValue();

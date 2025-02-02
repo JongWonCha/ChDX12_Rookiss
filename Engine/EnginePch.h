@@ -63,6 +63,11 @@ struct Vertex
 	Vec4 color;
 };
 
+struct ConstantBufferDefault
+{
+	XMFLOAT4 offset;
+};
+
 class Engine;
 
 #define DEVICE			GEngine->GetDevice()->GetDevice()

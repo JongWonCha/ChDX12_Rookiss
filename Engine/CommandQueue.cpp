@@ -1,4 +1,5 @@
 #include "pch.h"
+#include "Engine.h"
 #include "CommandQueue.h"
 #include "SwapChain.h"
 
@@ -46,6 +47,8 @@ void CommandQueue::RenderBegin(const D3D12_VIEWPORT* vp, const D3D12_RECT* rect)
 		D3D12_RESOURCE_STATE_PRESENT,
 		D3D12_RESOURCE_STATE_RENDER_TARGET
 		);
+
+	//_cmdList->SetGraphicsRootSignature(ROOT_SIGNATURE.Get());
 
 	_cmdList->ResourceBarrier(1, &barrier);
 
