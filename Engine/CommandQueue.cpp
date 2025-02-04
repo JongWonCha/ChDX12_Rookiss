@@ -19,6 +19,9 @@ void CommandQueue::Init(ComPtr<ID3D12Device> device, shared_ptr<SwapChain> swapC
 
 	_cmdList->Close();
 
+	device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(_resCmdAlloc.GetAddressOf()));
+	device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, _resCmdAlloc.Get(), nullptr, IID_PPV_ARGS(_resCmdList.GetAddressOf()));
+
 	device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&_fence));
 	_fenceEvent = ::CreateEvent(nullptr, FALSE, FALSE, nullptr);
 }
@@ -81,6 +84,19 @@ void CommandQueue::RenderEnd()
 	WaitSync();
 
 	_swapChain->SwapIndex();
+}
+
+void CommandQueue::FlushResourceCommandQueue()
+{
+	_resCmdList->Close();
+
+	ID3D12CommandList* ppCmdListArr[] = { _resCmdList.Get() };
+	_cmdQueue->ExecuteCommandLists(_countof(ppCmdListArr), ppCmdListArr);
+
+	WaitSync();
+
+	_resCmdAlloc->Reset();
+	_resCmdList->Reset(_resCmdAlloc.Get(), nullptr);
 }
 
 CommandQueue::~CommandQueue()

@@ -73,15 +73,21 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>$(SolutionDir)Output\Debug\</OutDir>
+    <IncludePath>$(SolutionDir)Library\Include\;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(SolutionDir)Output\Debug\</OutDir>
+    <IncludePath>$(SolutionDir)Library/Include/;$(IncludePath)</IncludePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)Output\Release\</OutDir>
+    <IncludePath>$(SolutionDir)Library\Include\;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)Output\Release\</OutDir>
+    <IncludePath>$(SolutionDir)Library/Include/;$(IncludePath)</IncludePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -162,11 +168,14 @@
     <ClInclude Include="Device.h" />
     <ClInclude Include="Engine.h" />
     <ClInclude Include="EnginePch.h" />
+    <ClInclude Include="IndexCreator.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="RootSignature.h" />
     <ClInclude Include="Shader.h" />
+    <ClInclude Include="SingleDescriptorAllocator.h" />
     <ClInclude Include="SwapChain.h" />
+    <ClInclude Include="Texture.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CommandQueue.cpp" />
@@ -175,6 +184,7 @@
     <ClCompile Include="Device.cpp" />
     <ClCompile Include="Engine.cpp" />
     <ClCompile Include="EnginePch.cpp" />
+    <ClCompile Include="IndexCreator.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -184,7 +194,9 @@
     </ClCompile>
     <ClCompile Include="RootSignature.cpp" />
     <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="SingleDescriptorAllocator.cpp" />
     <ClCompile Include="SwapChain.cpp" />
+    <ClCompile Include="Texture.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

@@ -8,6 +8,8 @@
 #include "Shader.h"
 #include "ConstantBuffer.h"
 #include "DescriptorPool.h"
+#include "Texture.h"
+#include "SingleDescriptorAllocator.h"
 
 
 class Engine
@@ -24,6 +26,7 @@ public:
 	shared_ptr<RootSignature> GetRootSignature() { return _rootSignature; }
 	shared_ptr<ConstantBuffer> GetCB() { return _cb; }
 	shared_ptr<DescriptorPool> GetDescriptorPool() { return _descriptorPool; }
+	shared_ptr<SingleDescriptorAllocator> GetSingleDescriptorAllocator() { return _singleDescriptorAllocator; }
 
 	void RenderBegin();
 	void RenderEnd();
@@ -34,11 +37,12 @@ private:
 	D3D12_VIEWPORT	_viewport = {};
 	D3D12_RECT		_scissorRect = {};
 
-	shared_ptr<Device>			_device;
-	shared_ptr<CommandQueue>	_cmdQueue;
-	shared_ptr<SwapChain>		_swapChain;
-	shared_ptr<RootSignature>	_rootSignature;
-	shared_ptr<ConstantBuffer>	_cb;
-	shared_ptr<DescriptorPool>	_descriptorPool;
+	shared_ptr<Device>						_device;
+	shared_ptr<CommandQueue>				_cmdQueue;
+	shared_ptr<SwapChain>					_swapChain;
+	shared_ptr<RootSignature>				_rootSignature;
+	shared_ptr<ConstantBuffer>				_cb;
+	shared_ptr<DescriptorPool>				_descriptorPool;
+	shared_ptr<SingleDescriptorAllocator>	_singleDescriptorAllocator;
 };
 

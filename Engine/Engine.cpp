@@ -20,13 +20,15 @@ void Engine::Init(const WindowInfo& window)
 	_rootSignature = make_shared<RootSignature>();
 	_descriptorPool = make_shared<DescriptorPool>();
 	_cb = make_shared<ConstantBuffer>();
+	_singleDescriptorAllocator = make_shared<SingleDescriptorAllocator>();
 
 	_device->Init();
 	_cmdQueue->Init(_device->GetDevice(), _swapChain);
 	_swapChain->Init(window, _device->GetDevice(), _device->GetDXGI(), _cmdQueue->GetCmdQueue());
-	_rootSignature->Init(_device->GetDevice());
+	_rootSignature->Init();
 	_descriptorPool->Init(_device->GetDevice(), 256 * 2);
 	_cb->Init(sizeof(ConstantBufferDefault), 256 * 2);
+	_singleDescriptorAllocator->Init(4096, D3D12_DESCRIPTOR_HEAP_FLAG_NONE);
 }
 
 void Engine::RenderBegin()

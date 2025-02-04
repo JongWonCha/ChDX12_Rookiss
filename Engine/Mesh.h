@@ -5,7 +5,7 @@ public:
 	void Init(const vector<Vertex>& vertexVec, const vector<WORD>& indexVec);
 	void CreateVertexBuffer(const vector<Vertex>& vec);
 	void CreateIndexBuffer(const vector<WORD>& vec);
-	void Render(const XMFLOAT4 * b0, const XMFLOAT4*  b1);
+	void Render(const XMFLOAT4 * b0, const XMFLOAT4*  b1, D3D12_CPU_DESCRIPTOR_HANDLE srv);
 
 	UINT64 Fence();
 	void WaitForFenceValue();

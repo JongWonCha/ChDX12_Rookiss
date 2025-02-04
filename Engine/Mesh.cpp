@@ -174,7 +174,7 @@ void Mesh::CreateIndexBuffer(const vector<WORD>& vec)
 	}*/
 }
 
-void Mesh::Render(const XMFLOAT4* b0, const XMFLOAT4* b1)
+void Mesh::Render(const XMFLOAT4* b0, const XMFLOAT4* b1, D3D12_CPU_DESCRIPTOR_HANDLE srv)
 {
 	shared_ptr<DescriptorPool> dp = GEngine->GetDescriptorPool();
 	shared_ptr<ConstantBuffer> cb = GEngine->GetCB();
@@ -182,7 +182,7 @@ void Mesh::Render(const XMFLOAT4* b0, const XMFLOAT4* b1)
 	CD3DX12_CPU_DESCRIPTOR_HANDLE cpuDescTable = {};
 	CD3DX12_GPU_DESCRIPTOR_HANDLE gpuDescTable = {};
 
-	dp->AllocDescriptorTable(&cpuDescTable, &gpuDescTable, 2);
+	dp->AllocDescriptorTable(&cpuDescTable, &gpuDescTable, 3);
 
 	CB_CONTAINER* pCB = cb->Alloc();
 	if (!pCB)
@@ -207,7 +207,6 @@ void Mesh::Render(const XMFLOAT4* b0, const XMFLOAT4* b1)
 	ConstantBufferDefault* cb1 = (ConstantBufferDefault*)cbContainer1->pSystemMemAddr;
 	cb1->offset = *b1;
 
-
 	UINT srvDescriptorSize = DEVICE->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 
 	CMD_LIST->SetGraphicsRootSignature(ROOT_SIGNATURE.Get());
@@ -219,6 +218,12 @@ void Mesh::Render(const XMFLOAT4* b0, const XMFLOAT4* b1)
 
 	CD3DX12_CPU_DESCRIPTOR_HANDLE cbvDesc1(cpuDescTable, 1, srvDescriptorSize);
 	DEVICE->CopyDescriptorsSimple(1, cbvDesc1, cbContainer1->CBVHandle, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+
+	if (srv.ptr)
+	{
+		CD3DX12_CPU_DESCRIPTOR_HANDLE srvDest(cpuDescTable, 2, srvDescriptorSize);
+		DEVICE->CopyDescriptorsSimple(1, srvDest, srv, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	}
 
 	CMD_LIST->SetGraphicsRootDescriptorTable(0, gpuDescTable);
 

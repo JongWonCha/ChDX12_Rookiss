@@ -1,5 +1,7 @@
 #pragma once
 
+#define _HAS_STD_BYTE 0
+
 // include
 #include <Windows.h>
 #include <tchar.h>
@@ -11,9 +13,11 @@
 #include <map>
 using namespace std;
 
+#include <filesystem>
+namespace fs = std::filesystem;
 
-#include "d3dx12.h"
 #include <d3d12.h>
+#include <d3dx12.h>
 #include <wrl.h>
 #include <d3dcompiler.h>
 #include <dxgi.h>
@@ -24,11 +28,20 @@ using namespace DirectX;
 using namespace DirectX::PackedVector;
 using namespace Microsoft::WRL;
 
+#include "DirectXTex/DirectXTex.h"
+#include "DirectXTex/DirectXTex.inl"
+
 // lib
 #pragma comment(lib, "d3d12")
 #pragma comment(lib, "dxgi")
 #pragma comment(lib, "dxguid")
 #pragma comment(lib, "d3dcompiler")
+
+#ifdef _DEBUG
+#pragma comment(lib, "DirectXTex\\DirectXTex_debug.lib")
+#else
+#pragma comment(lib, "DirectXTex\\DirectXTex.lib")
+#endif
 
 // typedef
 using int8  = __int8;
@@ -61,6 +74,7 @@ struct Vertex
 {
 	Vec3 pos;
 	Vec4 color;
+	Vec2 uv;
 };
 
 struct ConstantBufferDefault
@@ -68,10 +82,17 @@ struct ConstantBufferDefault
 	XMFLOAT4 offset;
 };
 
+struct TEXTURE_HANDLE
+{
+	ComPtr<ID3D12Resource> pTexResource = nullptr;
+	D3D12_CPU_DESCRIPTOR_HANDLE srv = {};
+};
+
 class Engine;
 
-#define DEVICE			GEngine->GetDevice()->GetDevice()
-#define CMD_LIST		GEngine->GetCmdQueue()->GetCmdList()
-#define ROOT_SIGNATURE	GEngine->GetRootSignature()->GetSignature()
+#define DEVICE				GEngine->GetDevice()->GetDevice()
+#define CMD_LIST			GEngine->GetCmdQueue()->GetCmdList()
+#define ROOT_SIGNATURE		GEngine->GetRootSignature()->GetSignature()
+#define RESOURCE_CMD_LIST	GEngine->GetCmdQueue()->GetResourceCmdList()
 
 extern unique_ptr<Engine> GEngine;

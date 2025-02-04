@@ -48,6 +48,15 @@
     <ClInclude Include="DescriptorPool.h">
       <Filter>Engine</Filter>
     </ClInclude>
+    <ClInclude Include="Texture.h">
+      <Filter>Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="IndexCreator.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="SingleDescriptorAllocator.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -81,6 +90,15 @@
       <Filter>Engine</Filter>
     </ClCompile>
     <ClCompile Include="DescriptorPool.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture.cpp">
+      <Filter>Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="IndexCreator.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="SingleDescriptorAllocator.cpp">
       <Filter>Engine</Filter>
     </ClCompile>
   </ItemGroup>
