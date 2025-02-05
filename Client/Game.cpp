@@ -6,6 +6,11 @@ shared_ptr<Mesh> mesh = make_shared<Mesh>();
 shared_ptr<Shader> shader = make_shared<Shader>();
 shared_ptr<Texture> texture = make_shared<Texture>();
 
+static XMFLOAT4 b0 = { 0.25f, 0.f, 0.1f, 0.f };
+static XMFLOAT4 b1 = { 0.f, 0.f, 0.f, 0.f };
+static XMFLOAT4 b2 = { 0.f, 0.f, 0.1f, 0.f };
+static XMFLOAT4 b3 = { 0.f, 0.f, 0.f, 0.f };
+
 void Game::Init(const WindowInfo& info)
 {
 	GEngine->Init(info);
@@ -38,19 +43,44 @@ void Game::Init(const WindowInfo& info)
 
 void Game::Update()
 {
+	GEngine->Update();
+
 	GEngine->RenderBegin();
 
 	shader->Update();
+	{
+		
+
+		
+
+		if (INPUT->GetButton(KEY_TYPE::W))
+			b0.y += TIMER->GetDeltaTime();
+		if (INPUT->GetButton(KEY_TYPE::S))
+			b0.y -= TIMER->GetDeltaTime();
+		if (INPUT->GetButton(KEY_TYPE::A))
+			b2.x -= TIMER->GetDeltaTime();
+		if (INPUT->GetButton(KEY_TYPE::D))
+			b2.x += TIMER->GetDeltaTime();
+		if (INPUT->GetButton(KEY_TYPE::UP))
+			b2.z += TIMER->GetDeltaTime();
+		if (INPUT->GetButton(KEY_TYPE::DOWN))
+			b2.z -= TIMER->GetDeltaTime();
+			
+
+		mesh->Render(&b0, &b1, texture->GetTextureHandle("veigar")->srv);
+
+		mesh->Render(&b2, &b3, texture->GetTextureHandle("veigar")->srv);
+	}
 
 
-	XMFLOAT4 b0 = { 0.25f, 0.f, 0.0f, 1.0f };
-	XMFLOAT4 b1 = { 0.5f, 0.25f, 0.5f, 1.f };
-	mesh->Render(&b0, &b1, texture->GetTextureHandle("veigar")->srv);
+	//XMFLOAT4 b0 = { 0.2f, 0.f, 0.1f, 1.0f };
+	//XMFLOAT4 b1 = { 0.5f, 0.2f, 0.5f, 1.f };
+	
 
 
-	XMFLOAT4 b2 = { -0.25f, 0.f, 0.f, 1.f };
-	XMFLOAT4 b3 = { 1.0f, -0.25f, 1.f, 1.f };
-	mesh->Render(&b2, &b3, texture->GetTextureHandle("veigar")->srv);
+	//XMFLOAT4 b2 = { -0.2f, 0.f, 0.0f, 1.f };
+	//XMFLOAT4 b3 = { 1.0f, -0.2f, 1.f, 1.f };
+	
 
 	GEngine->RenderEnd();
 

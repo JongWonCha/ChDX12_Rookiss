@@ -19,8 +19,11 @@ void Shader::Init(const wstring& path)
 
 	_pipelineDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
 	_pipelineDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
-	_pipelineDesc.DepthStencilState.DepthEnable = FALSE;
-	_pipelineDesc.DepthStencilState.StencilEnable = FALSE;
+
+	//depth stencil
+	_pipelineDesc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
+	_pipelineDesc.DSVFormat = DXGI_FORMAT_D32_FLOAT;
+
 	_pipelineDesc.SampleMask = UINT_MAX;
 	_pipelineDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
 	_pipelineDesc.NumRenderTargets = 1;

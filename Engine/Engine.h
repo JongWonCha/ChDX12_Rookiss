@@ -10,6 +10,10 @@
 #include "DescriptorPool.h"
 #include "Texture.h"
 #include "SingleDescriptorAllocator.h"
+#include "DepthStencilBuffer.h"
+
+#include "Input.h"
+#include "Timer.h"
 
 
 class Engine
@@ -20,6 +24,9 @@ public:
 	void Render();
 
 public:
+	void Update();
+
+public:
 	shared_ptr<Device> GetDevice() { return _device; }
 	shared_ptr<CommandQueue> GetCmdQueue() { return _cmdQueue; }
 	shared_ptr<SwapChain> GetSwapChain() { return _swapChain; }
@@ -27,11 +34,16 @@ public:
 	shared_ptr<ConstantBuffer> GetCB() { return _cb; }
 	shared_ptr<DescriptorPool> GetDescriptorPool() { return _descriptorPool; }
 	shared_ptr<SingleDescriptorAllocator> GetSingleDescriptorAllocator() { return _singleDescriptorAllocator; }
+	shared_ptr<DepthStencilBuffer> GetDepthStencilBuffer() { return _depthStencilBuffer; }
+
+	shared_ptr<Input> GetInput() { return _input; }
+	shared_ptr<Timer> GetTimer() { return _timer; }
 
 	void RenderBegin();
 	void RenderEnd();
 
 	void ResizeWindow(int32 width, int32 height);
+
 private:
 	WindowInfo		_window;
 	D3D12_VIEWPORT	_viewport = {};
@@ -44,5 +56,9 @@ private:
 	shared_ptr<ConstantBuffer>				_cb;
 	shared_ptr<DescriptorPool>				_descriptorPool;
 	shared_ptr<SingleDescriptorAllocator>	_singleDescriptorAllocator;
+	shared_ptr<DepthStencilBuffer>			_depthStencilBuffer;
+
+	shared_ptr<Input>						_input;
+	shared_ptr<Timer>						_timer;
 };
 

@@ -30,8 +30,8 @@ VS_OUT VS_Main(VS_IN input)
     VS_OUT output = (VS_OUT)0;
     
     output.pos = float4(input.pos, 1.f);
-    output.pos.x += offset0.x;
-    output.pos.y += offset1.y;
+    output.pos.xyz += offset0.xyz;
+    
     output.color = input.color;
     output.uv = input.uv;
     //output.color = offset1;

@@ -57,6 +57,15 @@
     <ClInclude Include="SingleDescriptorAllocator.h">
       <Filter>Engine</Filter>
     </ClInclude>
+    <ClInclude Include="DepthStencilBuffer.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Input.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Timer.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -99,6 +108,15 @@
       <Filter>Utils</Filter>
     </ClCompile>
     <ClCompile Include="SingleDescriptorAllocator.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="DepthStencilBuffer.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Input.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Timer.cpp">
       <Filter>Engine</Filter>
     </ClCompile>
   </ItemGroup>

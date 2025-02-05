@@ -95,4 +95,7 @@ class Engine;
 #define ROOT_SIGNATURE		GEngine->GetRootSignature()->GetSignature()
 #define RESOURCE_CMD_LIST	GEngine->GetCmdQueue()->GetResourceCmdList()
 
+#define INPUT				GEngine->GetInput()
+#define TIMER				GEngine->GetTimer()
+
 extern unique_ptr<Engine> GEngine;

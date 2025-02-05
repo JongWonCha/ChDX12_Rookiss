@@ -9,8 +9,6 @@ void Engine::Init(const WindowInfo& window)
 {
 	_window = window;
 
-	ResizeWindow(window.width, window.height);
-
 	_viewport = { 0, 0, static_cast<FLOAT>(window.width), static_cast<FLOAT>(window.height), 0.0f, 1.0f };
 	_scissorRect = CD3DX12_RECT(0, 0, window.width, window.height);
 
@@ -21,6 +19,9 @@ void Engine::Init(const WindowInfo& window)
 	_descriptorPool = make_shared<DescriptorPool>();
 	_cb = make_shared<ConstantBuffer>();
 	_singleDescriptorAllocator = make_shared<SingleDescriptorAllocator>();
+	_depthStencilBuffer = make_shared<DepthStencilBuffer>();
+	_input = make_shared<Input>();
+	_timer = make_shared<Timer>();
 
 	_device->Init();
 	_cmdQueue->Init(_device->GetDevice(), _swapChain);
@@ -29,6 +30,18 @@ void Engine::Init(const WindowInfo& window)
 	_descriptorPool->Init(_device->GetDevice(), 256 * 2);
 	_cb->Init(sizeof(ConstantBufferDefault), 256 * 2);
 	_singleDescriptorAllocator->Init(4096, D3D12_DESCRIPTOR_HEAP_FLAG_NONE);
+	_depthStencilBuffer->Init(window);
+
+	_input->Init(window.hwnd);
+	_timer->Init();
+
+	ResizeWindow(window.width, window.height);
+}
+
+void Engine::Update()
+{
+	_input->Update();
+	_timer->Update();
 }
 
 void Engine::RenderBegin()
@@ -58,4 +71,7 @@ void Engine::ResizeWindow(int32 width, int32 height)
 	RECT rect = { 0, 0, width, height };
 	::AdjustWindowRect(&rect, WS_OVERLAPPEDWINDOW, false);
 	::SetWindowPos(_window.hwnd, 0, 100, 100, width, height, 0);
+
+	_depthStencilBuffer->Init(_window);
 }
+
