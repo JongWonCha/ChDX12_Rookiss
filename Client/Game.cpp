@@ -44,12 +44,12 @@ void Game::Update()
 
 
 	XMFLOAT4 b0 = { 0.25f, 0.f, 0.0f, 1.0f };
-	XMFLOAT4 b1 = { 0.5f, 0.0f, 0.5f, 1.f };
+	XMFLOAT4 b1 = { 0.5f, 0.25f, 0.5f, 1.f };
 	mesh->Render(&b0, &b1, texture->GetTextureHandle("veigar")->srv);
 
 
 	XMFLOAT4 b2 = { -0.25f, 0.f, 0.f, 1.f };
-	XMFLOAT4 b3 = { 1.0f, -0.0f, 1.f, 1.f };
+	XMFLOAT4 b3 = { 1.0f, -0.25f, 1.f, 1.f };
 	mesh->Render(&b2, &b3, texture->GetTextureHandle("veigar")->srv);
 
 	GEngine->RenderEnd();

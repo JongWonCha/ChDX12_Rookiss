@@ -102,7 +102,10 @@ void Texture::CreateView(ComPtr<ID3D12Resource> texResource, ScratchImage* image
 TEXTURE_HANDLE* Texture::GetTextureHandle(const string& texId)
 {
 	if (stringTexMap.find(texId) == stringTexMap.end())
+	{
+		__debugbreak();
 		return nullptr;
+	}
 
 	return stringTexMap[texId];
 }

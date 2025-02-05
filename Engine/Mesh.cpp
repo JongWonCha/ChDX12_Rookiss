@@ -213,7 +213,7 @@ void Mesh::Render(const XMFLOAT4* b0, const XMFLOAT4* b1, D3D12_CPU_DESCRIPTOR_H
 
 	CMD_LIST->SetDescriptorHeaps(1, dp->GetDescriptorHeap().GetAddressOf());
 
-	CD3DX12_CPU_DESCRIPTOR_HANDLE cbvDesc0(cpuDescTable, 0, srvDescriptorSize);
+	/*CD3DX12_CPU_DESCRIPTOR_HANDLE cbvDesc0(cpuDescTable, 0, srvDescriptorSize);
 	DEVICE->CopyDescriptorsSimple(1, cbvDesc0, cbContainer0->CBVHandle, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 
 	CD3DX12_CPU_DESCRIPTOR_HANDLE cbvDesc1(cpuDescTable, 1, srvDescriptorSize);
@@ -223,7 +223,27 @@ void Mesh::Render(const XMFLOAT4* b0, const XMFLOAT4* b1, D3D12_CPU_DESCRIPTOR_H
 	{
 		CD3DX12_CPU_DESCRIPTOR_HANDLE srvDest(cpuDescTable, 2, srvDescriptorSize);
 		DEVICE->CopyDescriptorsSimple(1, srvDest, srv, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	}
+	}*/
+
+	// 1. CopyDescriptors »ç¿ë
+	UINT numDescriptors[] = { 1, 1, srv.ptr ? 1 : 0 };
+	D3D12_CPU_DESCRIPTOR_HANDLE dstHandles[] = {
+		cpuDescTable,
+		CD3DX12_CPU_DESCRIPTOR_HANDLE(cpuDescTable, 1, srvDescriptorSize),
+		CD3DX12_CPU_DESCRIPTOR_HANDLE(cpuDescTable, 2, srvDescriptorSize)
+	};
+	D3D12_CPU_DESCRIPTOR_HANDLE srcHandles[] = {
+		cbContainer0->CBVHandle,
+		cbContainer1->CBVHandle,
+		srv
+	};
+
+	UINT numRanges = srv.ptr ? 3 : 2;
+	DEVICE->CopyDescriptors(
+		numRanges, dstHandles, numDescriptors,
+		numRanges, srcHandles, numDescriptors,
+		D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV
+	);
 
 	CMD_LIST->SetGraphicsRootDescriptorTable(0, gpuDescTable);
 
