@@ -18,8 +18,8 @@ void RootSignature::CreateRootSignature()
 	// 루트 시그니처 넣을 수 있는 종류
 	// constant, descriptor, table
 	CD3DX12_DESCRIPTOR_RANGE range[2] = {};
-	range[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 2, 0);
-	range[1].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0);
+	range[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 2, 0); // b0 ~ b1
+	range[1].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 5, 0); // t0 ~ t4
 
 	CD3DX12_ROOT_PARAMETER param[1] = {};
 	param[0].InitAsDescriptorTable(_countof(range), range, D3D12_SHADER_VISIBILITY_ALL);

@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "Mesh.h"
 #include "Engine.h"
+#include "Transform.h"
 
 void Mesh::Init(const vector<Vertex>& vertexVec, const vector<WORD>& indexVec)
 {
@@ -174,38 +175,38 @@ void Mesh::CreateIndexBuffer(const vector<WORD>& vec)
 	}*/
 }
 
-void Mesh::Render(const XMFLOAT4* b0, const XMFLOAT4* b1, D3D12_CPU_DESCRIPTOR_HANDLE srv)
+void Mesh::Render(const XMFLOAT4* b0, const float* time, D3D12_CPU_DESCRIPTOR_HANDLE srv)
 {
 	shared_ptr<DescriptorPool> dp = GEngine->GetDescriptorPool();
-	shared_ptr<ConstantBuffer> cb = GEngine->GetCB();
+	shared_ptr<ConstantBuffer> cbTransform = GEngine->GetCBByType(CONSTANT_BUFFER_TYPE::TRANSFORM);
+	shared_ptr<ConstantBuffer> cbMaterial = GEngine->GetCBByType(CONSTANT_BUFFER_TYPE::MATERIAL);
+
 
 	CD3DX12_CPU_DESCRIPTOR_HANDLE cpuDescTable = {};
 	CD3DX12_GPU_DESCRIPTOR_HANDLE gpuDescTable = {};
 
 	dp->AllocDescriptorTable(&cpuDescTable, &gpuDescTable, 3);
 
-	CB_CONTAINER* pCB = cb->Alloc();
-	if (!pCB)
+	CB_CONTAINER* cbContainer0 = cbTransform->Alloc();
+	if (!cbContainer0)
 	{
 		__debugbreak();
 		return;
 	}
 
-	CB_CONTAINER* cbContainer0 = pCB;
-
-	ConstantBufferDefault* cb0 = (ConstantBufferDefault*)cbContainer0->pSystemMemAddr;
+	Constant_TransformMatrix* cb0 = (Constant_TransformMatrix*)cbContainer0->pSystemMemAddr;
 	cb0->offset = *b0;
 
-	pCB = cb->Alloc();
-	if (!pCB)
+	CB_CONTAINER* cbContainer1 = cbMaterial->Alloc();
+	if (!cbContainer1)
 	{
 		__debugbreak();
 		return;
 	}
 
-	CB_CONTAINER* cbContainer1 = pCB;
-	ConstantBufferDefault* cb1 = (ConstantBufferDefault*)cbContainer1->pSystemMemAddr;
-	cb1->offset = *b1;
+	Constant_MaterialParams* cb1 = (Constant_MaterialParams*)cbContainer1->pSystemMemAddr;
+	cb1->SetAllInt(0);
+	cb1->SetAllFloat(*time);
 
 	UINT srvDescriptorSize = DEVICE->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 

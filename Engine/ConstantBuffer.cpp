@@ -13,6 +13,7 @@ ConstantBuffer::~ConstantBuffer()
 		if (_cbvBuffer != nullptr)
 			_cbvBuffer->Unmap(0, nullptr);
 
+		//_cbvBuffer.Get()->Release();
 		_cbvBuffer = nullptr;
 	}
 
@@ -23,10 +24,10 @@ ConstantBuffer::~ConstantBuffer()
 	}
 }
 
-void ConstantBuffer::Init(uint32 size, uint32 count)
+void ConstantBuffer::Init(uint32 elementSize, uint32 elementCount)
 {
-	_elementSize = (size + 255) & ~255;
-	_elementCount = count;
+	_elementSize = (elementSize + 255) & ~255;
+	_elementCount = elementCount;
 
 	CreateBuffer();
 }

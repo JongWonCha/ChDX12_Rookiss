@@ -3,6 +3,7 @@
 #include "Device.h"
 #include "CommandQueue.h"
 #include "SwapChain.h"
+#include "Transform.h"
 
 
 void Engine::Init(const WindowInfo& window)
@@ -17,7 +18,9 @@ void Engine::Init(const WindowInfo& window)
 	_swapChain = make_shared<SwapChain>();
 	_rootSignature = make_shared<RootSignature>();
 	_descriptorPool = make_shared<DescriptorPool>();
-	_cb = make_shared<ConstantBuffer>();
+	_constantBuffers.emplace_back(make_shared<ConstantBuffer>()); //
+	_constantBuffers.emplace_back(make_shared<ConstantBuffer>());
+	//_constantBuffers = make_shared<ConstantBuffer>();
 	_singleDescriptorAllocator = make_shared<SingleDescriptorAllocator>();
 	_depthStencilBuffer = make_shared<DepthStencilBuffer>();
 	_input = make_shared<Input>();
@@ -28,7 +31,8 @@ void Engine::Init(const WindowInfo& window)
 	_swapChain->Init(window, _device->GetDevice(), _device->GetDXGI(), _cmdQueue->GetCmdQueue());
 	_rootSignature->Init();
 	_descriptorPool->Init(_device->GetDevice(), 256 * 2);
-	_cb->Init(sizeof(ConstantBufferDefault), 256 * 2);
+	_constantBuffers[0]->Init(sizeof(Constant_TransformMatrix), 256);
+	_constantBuffers[1]->Init(sizeof(Constant_MaterialParams), 256 * 2);
 	_singleDescriptorAllocator->Init(4096, D3D12_DESCRIPTOR_HEAP_FLAG_NONE);
 	_depthStencilBuffer->Init(window);
 

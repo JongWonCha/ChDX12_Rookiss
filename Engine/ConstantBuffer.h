@@ -1,4 +1,17 @@
 #pragma once
+
+enum class CONSTANT_BUFFER_TYPE
+{
+	TRANSFORM,
+	MATERIAL,
+	END
+};
+
+enum
+{
+	CONSTANT_BUFFER_COUNT = static_cast<uint8>(CONSTANT_BUFFER_TYPE::END)
+};
+
 struct CB_CONTAINER
 {
 	D3D12_CPU_DESCRIPTOR_HANDLE	CBVHandle;
@@ -12,7 +25,7 @@ public:
 	ConstantBuffer();
 	~ConstantBuffer();
 
-	void Init(uint32 size, uint32 count);
+	void Init(uint32 elementSize, uint32 elementCount);
 
 	void Reset();
 	CB_CONTAINER * Alloc();
@@ -21,7 +34,7 @@ private:
 	void CreateBuffer();
 
 private:
-	CB_CONTAINER*			_pCBContainerList = nullptr;
+	CB_CONTAINER*					_pCBContainerList = nullptr;
 
 	ComPtr<ID3D12Resource>			_cbvBuffer;
 	ComPtr<ID3D12DescriptorHeap>	_descriptorHeap = nullptr;

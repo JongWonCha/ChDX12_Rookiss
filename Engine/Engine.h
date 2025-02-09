@@ -31,7 +31,7 @@ public:
 	shared_ptr<CommandQueue> GetCmdQueue() { return _cmdQueue; }
 	shared_ptr<SwapChain> GetSwapChain() { return _swapChain; }
 	shared_ptr<RootSignature> GetRootSignature() { return _rootSignature; }
-	shared_ptr<ConstantBuffer> GetCB() { return _cb; }
+	shared_ptr<ConstantBuffer> GetCBByType(CONSTANT_BUFFER_TYPE type) { return _constantBuffers[static_cast<uint8>(type)]; }
 	shared_ptr<DescriptorPool> GetDescriptorPool() { return _descriptorPool; }
 	shared_ptr<SingleDescriptorAllocator> GetSingleDescriptorAllocator() { return _singleDescriptorAllocator; }
 	shared_ptr<DepthStencilBuffer> GetDepthStencilBuffer() { return _depthStencilBuffer; }
@@ -53,7 +53,7 @@ private:
 	shared_ptr<CommandQueue>				_cmdQueue;
 	shared_ptr<SwapChain>					_swapChain;
 	shared_ptr<RootSignature>				_rootSignature;
-	shared_ptr<ConstantBuffer>				_cb;
+	vector<shared_ptr<ConstantBuffer>>		_constantBuffers;
 	shared_ptr<DescriptorPool>				_descriptorPool;
 	shared_ptr<SingleDescriptorAllocator>	_singleDescriptorAllocator;
 	shared_ptr<DepthStencilBuffer>			_depthStencilBuffer;

@@ -11,6 +11,8 @@ static XMFLOAT4 b1 = { 0.f, 0.f, 0.f, 0.f };
 static XMFLOAT4 b2 = { 0.f, 0.f, 0.1f, 0.f };
 static XMFLOAT4 b3 = { 0.f, 0.f, 0.f, 0.f };
 
+static float elapsedTime = 0.0f;
+
 void Game::Init(const WindowInfo& info)
 {
 	GEngine->Init(info);
@@ -67,9 +69,10 @@ void Game::Update()
 			b2.z -= TIMER->GetDeltaTime();
 			
 
-		mesh->Render(&b0, &b1, texture->GetTextureHandle("veigar")->srv);
+		elapsedTime += TIMER->GetDeltaTime();
+		mesh->Render(&b0, &elapsedTime, texture->GetTextureHandle("veigar")->srv);
 
-		mesh->Render(&b2, &b3, texture->GetTextureHandle("veigar")->srv);
+		mesh->Render(&b2, &elapsedTime, texture->GetTextureHandle("veigar")->srv);
 	}
 
 
@@ -85,5 +88,6 @@ void Game::Update()
 	GEngine->RenderEnd();
 
 	GEngine->GetDescriptorPool()->Reset();
-	GEngine->GetCB()->Reset();
+	CONSTANTBUFFER(CONSTANT_BUFFER_TYPE::TRANSFORM)->Reset();
+	CONSTANTBUFFER(CONSTANT_BUFFER_TYPE::MATERIAL)->Reset();
 }

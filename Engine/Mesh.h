@@ -1,11 +1,15 @@
 #pragma once
+
+class Material;
 class Mesh
 {
 public:
 	void Init(const vector<Vertex>& vertexVec, const vector<WORD>& indexVec);
 	void CreateVertexBuffer(const vector<Vertex>& vec);
 	void CreateIndexBuffer(const vector<WORD>& vec);
-	void Render(const XMFLOAT4 * b0, const XMFLOAT4*  b1, D3D12_CPU_DESCRIPTOR_HANDLE srv);
+	void Render(const XMFLOAT4 * b0, const float* time, D3D12_CPU_DESCRIPTOR_HANDLE srv);
+
+	void SetMaterial(shared_ptr<Material> mat) { _mat = mat; }
 
 	UINT64 Fence();
 	void WaitForFenceValue();
@@ -26,5 +30,7 @@ private:
 
 	ComPtr<ID3D12Resource>		_indexBuffer;
 	D3D12_INDEX_BUFFER_VIEW		_indexBufferView = {};
+
+	shared_ptr<Material> _mat = {};
 };
 
