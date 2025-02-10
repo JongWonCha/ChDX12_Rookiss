@@ -2,6 +2,7 @@
 #include "Mesh.h"
 #include "Engine.h"
 #include "Transform.h"
+#include "Material.h"
 
 void Mesh::Init(const vector<Vertex>& vertexVec, const vector<WORD>& indexVec)
 {
@@ -175,44 +176,45 @@ void Mesh::CreateIndexBuffer(const vector<WORD>& vec)
 	}*/
 }
 
-void Mesh::Render(const XMFLOAT4* b0, const float* time, D3D12_CPU_DESCRIPTOR_HANDLE srv)
+void Mesh::Render(D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle)
 {
-	shared_ptr<DescriptorPool> dp = GEngine->GetDescriptorPool();
-	shared_ptr<ConstantBuffer> cbTransform = GEngine->GetCBByType(CONSTANT_BUFFER_TYPE::TRANSFORM);
-	shared_ptr<ConstantBuffer> cbMaterial = GEngine->GetCBByType(CONSTANT_BUFFER_TYPE::MATERIAL);
+	//shared_ptr<DescriptorPool> dp = GEngine->GetDescriptorPool();
+	//shared_ptr<ConstantBuffer> cbTransform = GEngine->GetCBByType(CONSTANT_BUFFER_TYPE::TRANSFORM);
+	//shared_ptr<ConstantBuffer> cbMaterial = GEngine->GetCBByType(CONSTANT_BUFFER_TYPE::MATERIAL);
 
 
-	CD3DX12_CPU_DESCRIPTOR_HANDLE cpuDescTable = {};
-	CD3DX12_GPU_DESCRIPTOR_HANDLE gpuDescTable = {};
+	//CD3DX12_CPU_DESCRIPTOR_HANDLE cpuDescTable = {};
+	//CD3DX12_GPU_DESCRIPTOR_HANDLE gpuDescTable = {};
 
-	dp->AllocDescriptorTable(&cpuDescTable, &gpuDescTable, 3);
+	//dp->AllocDescriptorTable(&cpuDescTable, &gpuDescTable, 3);
 
-	CB_CONTAINER* cbContainer0 = cbTransform->Alloc();
-	if (!cbContainer0)
-	{
-		__debugbreak();
-		return;
-	}
+	//CB_CONTAINER* cbContainer0 = cbTransform->Alloc();
+	//if (!cbContainer0)
+	//{
+	//	__debugbreak();
+	//	return;
+	//}
 
-	Constant_TransformMatrix* cb0 = (Constant_TransformMatrix*)cbContainer0->pSystemMemAddr;
-	cb0->offset = *b0;
+	//Constant_TransformMatrix* cb0 = (Constant_TransformMatrix*)cbContainer0->pSystemMemAddr;
+	//cb0->offset = b0->offset;
 
-	CB_CONTAINER* cbContainer1 = cbMaterial->Alloc();
-	if (!cbContainer1)
-	{
-		__debugbreak();
-		return;
-	}
+	//CB_CONTAINER* cbContainer1 = cbMaterial->Alloc();
+	//if (!cbContainer1)
+	//{
+	//	__debugbreak();
+	//	return;
+	//}
 
-	Constant_MaterialParams* cb1 = (Constant_MaterialParams*)cbContainer1->pSystemMemAddr;
-	cb1->SetAllInt(0);
-	cb1->SetAllFloat(*time);
+	//Constant_MaterialParams* cb1 = (Constant_MaterialParams*)cbContainer1->pSystemMemAddr;
+	//*cb1 = *time;
+	///*cb1->SetAllInt(0);
+	//cb1->SetAllFloat(*time);*/
 
-	UINT srvDescriptorSize = DEVICE->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	//UINT srvDescriptorSize = DEVICE->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 
-	CMD_LIST->SetGraphicsRootSignature(ROOT_SIGNATURE.Get());
+	//CMD_LIST->SetGraphicsRootSignature(ROOT_SIGNATURE.Get());
 
-	CMD_LIST->SetDescriptorHeaps(1, dp->GetDescriptorHeap().GetAddressOf());
+	//CMD_LIST->SetDescriptorHeaps(1, dp->GetDescriptorHeap().GetAddressOf());
 
 	/*CD3DX12_CPU_DESCRIPTOR_HANDLE cbvDesc0(cpuDescTable, 0, srvDescriptorSize);
 	DEVICE->CopyDescriptorsSimple(1, cbvDesc0, cbContainer0->CBVHandle, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
@@ -227,7 +229,7 @@ void Mesh::Render(const XMFLOAT4* b0, const float* time, D3D12_CPU_DESCRIPTOR_HA
 	}*/
 
 	// 1. CopyDescriptors »ç¿ë
-	UINT numDescriptors[] = { 1, 1, srv.ptr ? 1 : 0 };
+	/*UINT numDescriptors[] = { 1, 1, srv.ptr ? 1 : 0 };
 	D3D12_CPU_DESCRIPTOR_HANDLE dstHandles[] = {
 		cpuDescTable,
 		CD3DX12_CPU_DESCRIPTOR_HANDLE(cpuDescTable, 1, srvDescriptorSize),
@@ -244,9 +246,9 @@ void Mesh::Render(const XMFLOAT4* b0, const float* time, D3D12_CPU_DESCRIPTOR_HA
 		numRanges, dstHandles, numDescriptors,
 		numRanges, srcHandles, numDescriptors,
 		D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV
-	);
+	);*/
 
-	CMD_LIST->SetGraphicsRootDescriptorTable(0, gpuDescTable);
+	CMD_LIST->SetGraphicsRootDescriptorTable(0, gpuHandle);
 
 	CMD_LIST->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	CMD_LIST->IASetVertexBuffers(0, 1, &_vertexBufferView);

@@ -2,16 +2,21 @@
 #include "Game.h"
 #include "Engine.h"
 
-shared_ptr<Mesh> mesh = make_shared<Mesh>();
-shared_ptr<Shader> shader = make_shared<Shader>();
+#include "GameObject.h"
+#include "MeshRenderer.h"
+#include "Material.h"
+#include "Transform.h"
+
 shared_ptr<Texture> texture = make_shared<Texture>();
+
+shared_ptr<GameObject> obj0 = make_shared<GameObject>();
+shared_ptr<GameObject> obj1 = make_shared<GameObject>();
 
 static XMFLOAT4 b0 = { 0.25f, 0.f, 0.1f, 0.f };
 static XMFLOAT4 b1 = { 0.f, 0.f, 0.f, 0.f };
-static XMFLOAT4 b2 = { 0.f, 0.f, 0.1f, 0.f };
-static XMFLOAT4 b3 = { 0.f, 0.f, 0.f, 0.f };
+//static XMFLOAT4 b2 = { 0.f, 0.f, 0.1f, 0.f };
+//static XMFLOAT4 b3 = { 0.f, 0.f, 0.f, 0.f };
 
-static float elapsedTime = 0.0f;
 
 void Game::Init(const WindowInfo& info)
 {
@@ -33,12 +38,33 @@ void Game::Init(const WindowInfo& info)
 
 	vector<WORD> indexVec = {0, 1, 2, 0, 2, 3};
 
+	obj0->Init();
+	obj1->Init();
 
-	mesh->Init(vertexVec, indexVec);
+	shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
+	{
+		shared_ptr<Mesh> mesh = make_shared<Mesh>();
+		mesh->Init(vertexVec, indexVec);
+		meshRenderer->SetMesh(mesh);
+	}
 
-	shader->Init(L"..\\Resources\\Shader\\default.hlsl");
+	{
+		shared_ptr<Shader> shader = make_shared<Shader>();
+		shared_ptr<Material> material = make_shared<Material>();
 
-	texture->Init(L"..\\Resources\\Texture\\veigar.jpg", "veigar", GEngine->GetSingleDescriptorAllocator());
+		shader->Init(L"..\\Resources\\Shader\\default.hlsl");
+		texture->Init(L"..\\Resources\\Texture\\veigar.jpg", "veigar", GEngine->GetSingleDescriptorAllocator());
+
+		material->SetShader(shader);
+		material->SetFloat(0, 0.3f);
+		material->SetFloat(1, 0.4f);
+		material->SetFloat(2, 0.3f);
+		material->SetTexture(0, texture->GetTextureHandle("veigar"));
+		meshRenderer->SetMaterial(material);
+	}
+	
+	obj0->AddComponent(meshRenderer);
+	obj1->AddComponent(meshRenderer);
 
 	GEngine->GetCmdQueue()->WaitSync();
 }
@@ -49,31 +75,20 @@ void Game::Update()
 
 	GEngine->RenderBegin();
 
-	shader->Update();
+	/*shader->Update();
 	{
 		
 
 		
 
-		if (INPUT->GetButton(KEY_TYPE::W))
-			b0.y += TIMER->GetDeltaTime();
-		if (INPUT->GetButton(KEY_TYPE::S))
-			b0.y -= TIMER->GetDeltaTime();
-		if (INPUT->GetButton(KEY_TYPE::A))
-			b2.x -= TIMER->GetDeltaTime();
-		if (INPUT->GetButton(KEY_TYPE::D))
-			b2.x += TIMER->GetDeltaTime();
-		if (INPUT->GetButton(KEY_TYPE::UP))
-			b2.z += TIMER->GetDeltaTime();
-		if (INPUT->GetButton(KEY_TYPE::DOWN))
-			b2.z -= TIMER->GetDeltaTime();
+		
 			
 
-		elapsedTime += TIMER->GetDeltaTime();
+		
 		mesh->Render(&b0, &elapsedTime, texture->GetTextureHandle("veigar")->srv);
 
 		mesh->Render(&b2, &elapsedTime, texture->GetTextureHandle("veigar")->srv);
-	}
+	}*/
 
 
 	//XMFLOAT4 b0 = { 0.2f, 0.f, 0.1f, 1.0f };
@@ -83,7 +98,25 @@ void Game::Update()
 
 	//XMFLOAT4 b2 = { -0.2f, 0.f, 0.0f, 1.f };
 	//XMFLOAT4 b3 = { 1.0f, -0.2f, 1.f, 1.f };
+
+	if (INPUT->GetButton(KEY_TYPE::W))
+		b0.y += TIMER->GetDeltaTime();
+	if (INPUT->GetButton(KEY_TYPE::S))
+		b0.y -= TIMER->GetDeltaTime();
+	if (INPUT->GetButton(KEY_TYPE::A))
+		b1.x -= TIMER->GetDeltaTime();
+	if (INPUT->GetButton(KEY_TYPE::D))
+		b1.x += TIMER->GetDeltaTime();
+	if (INPUT->GetButton(KEY_TYPE::UP))
+		b1.z += TIMER->GetDeltaTime();
+	if (INPUT->GetButton(KEY_TYPE::DOWN))
+		b1.z -= TIMER->GetDeltaTime();
+
+	obj0->GetTransform()->SetTransform(b0);
+	obj1->GetTransform()->SetTransform(b1);
 	
+	obj0->Update();
+	obj1->Update();
 
 	GEngine->RenderEnd();
 

@@ -12,6 +12,7 @@ public:
 	BOOL AllocDescriptorTable(D3D12_CPU_DESCRIPTOR_HANDLE* pOutCPUDescriptor, D3D12_GPU_DESCRIPTOR_HANDLE* pOutGPUDescriptor, UINT descriptorCount);
 	void Reset();
 	ComPtr<ID3D12DescriptorHeap> GetDescriptorHeap() { return _descriptorHeap; }
+	UINT GetSrvDescirptorSize() { return _srvDescriptorSize; }
 	DescriptorPool();
 	~DescriptorPool();
 

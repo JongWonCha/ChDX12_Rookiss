@@ -66,6 +66,9 @@ void CommandQueue::RenderBegin(const D3D12_VIEWPORT* vp, const D3D12_RECT* rect)
 	_cmdList->OMSetRenderTargets(1, &backBufferView, FALSE, &depthStencilView);
 	_cmdList->ClearDepthStencilView(depthStencilView, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 
+	_cmdList->SetGraphicsRootSignature(ROOT_SIGNATURE.Get());
+	_cmdList->SetDescriptorHeaps(1, DESCRIPTORPOOL->GetDescriptorHeap().GetAddressOf());
+
 }
 
 void CommandQueue::RenderEnd()

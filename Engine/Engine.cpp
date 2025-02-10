@@ -4,6 +4,7 @@
 #include "CommandQueue.h"
 #include "SwapChain.h"
 #include "Transform.h"
+#include "Material.h"
 
 
 void Engine::Init(const WindowInfo& window)
@@ -46,6 +47,10 @@ void Engine::Update()
 {
 	_input->Update();
 	_timer->Update();
+}
+
+void Engine::LateUpdate()
+{
 }
 
 void Engine::RenderBegin()

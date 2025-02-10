@@ -77,35 +77,6 @@ struct Vertex
 	Vec2 uv;
 };
 
-enum
-{
-	MATERIAL_INT_COUNT = 5,
-	MATERIAL_FLOAT_COUNT = 5,
-	MATERIAL_TEXTURE_COUNT = 5,
-};
-
-
-
-struct Constant_MaterialParams
-{
-	void SetInt(uint8 index, int32 value) { intParams[index] = value; }
-	void SetFloat(uint8 index, float value) { floatParams[index] = value; }
-
-	void SetAllInt(int32 value)
-	{
-		for (int i = 0; i < MATERIAL_INT_COUNT; ++i)
-			intParams[i] = value;
-	}
-
-	void SetAllFloat(float value)
-	{
-		for (int i = 0; i < MATERIAL_FLOAT_COUNT; ++i)
-			floatParams[i] = value;
-	}
-
-	array<int32, MATERIAL_INT_COUNT> intParams;
-	array<float, MATERIAL_FLOAT_COUNT> floatParams;
-};
 
 struct TEXTURE_HANDLE
 {
@@ -115,15 +86,16 @@ struct TEXTURE_HANDLE
 
 class Engine;
 
-#define DEVICE				GEngine->GetDevice()->GetDevice()
-#define CMD_LIST			GEngine->GetCmdQueue()->GetCmdList()
-#define ROOT_SIGNATURE		GEngine->GetRootSignature()->GetSignature()
-#define RESOURCE_CMD_LIST	GEngine->GetCmdQueue()->GetResourceCmdList()
+#define DEVICE					GEngine->GetDevice()->GetDevice()
+#define CMD_LIST				GEngine->GetCmdQueue()->GetCmdList()
+#define ROOT_SIGNATURE			GEngine->GetRootSignature()->GetSignature()
+#define RESOURCE_CMD_LIST		GEngine->GetCmdQueue()->GetResourceCmdList()
 
-#define INPUT				GEngine->GetInput()
-#define TIMER				GEngine->GetTimer()
-#define DELTATIME			GEngine->GetTimer()->GetDeltaTime()
+#define INPUT					GEngine->GetInput()
+#define TIMER					GEngine->GetTimer()
+#define DELTATIME				GEngine->GetTimer()->GetDeltaTime()
 
-#define CONSTANTBUFFER(type) GEngine->GetCBByType(type)
+#define CONSTANTBUFFER(type)	GEngine->GetCBByType(type)
+#define DESCRIPTORPOOL			GEngine->GetDescriptorPool()
 
 extern unique_ptr<Engine> GEngine;
