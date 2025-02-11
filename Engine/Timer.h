@@ -1,6 +1,8 @@
 #pragma once
 class Timer
 {
+	DECLARE_SINGLE(Timer);
+
 	uint64	_frequency = 0;
 	uint64	_prevCount = 0;
 	float	_deltaTime = 0.f;

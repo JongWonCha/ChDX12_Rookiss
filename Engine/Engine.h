@@ -12,19 +12,15 @@
 #include "SingleDescriptorAllocator.h"
 #include "DepthStencilBuffer.h"
 
-#include "Input.h"
-#include "Timer.h"
-
 
 class Engine
 {
 public:
 
 	void Init(const WindowInfo& window);
-	void Render();
-
-public:
 	void Update();
+public:
+	
 	void LateUpdate();
 
 public:
@@ -37,10 +33,9 @@ public:
 	shared_ptr<SingleDescriptorAllocator> GetSingleDescriptorAllocator() { return _singleDescriptorAllocator; }
 	shared_ptr<DepthStencilBuffer> GetDepthStencilBuffer() { return _depthStencilBuffer; }
 
-	shared_ptr<Input> GetInput() { return _input; }
-	shared_ptr<Timer> GetTimer() { return _timer; }
 
 	void RenderBegin();
+	void Render();
 	void RenderEnd();
 
 	void ResizeWindow(int32 width, int32 height);
@@ -59,7 +54,5 @@ private:
 	shared_ptr<SingleDescriptorAllocator>	_singleDescriptorAllocator;
 	shared_ptr<DepthStencilBuffer>			_depthStencilBuffer;
 
-	shared_ptr<Input>						_input;
-	shared_ptr<Timer>						_timer;
 };
 

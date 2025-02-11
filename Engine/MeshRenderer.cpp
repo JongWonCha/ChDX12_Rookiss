@@ -21,7 +21,7 @@ void MeshRenderer::Render()
 	D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle = {};
 	D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle = {};
 	DESCRIPTORPOOL->AllocDescriptorTable(&cpuHandle, &gpuHandle, 0);
-	gpuHandle.ptr -= DESCRIPTORPOOL->GetSrvDescirptorSize() * 7;
+	gpuHandle.ptr -= DESCRIPTORPOOL->GetSrvDescirptorSize() * 7; // TODO : offset 하드 코딩 해결
 
 	_mesh->Render(gpuHandle);
 }

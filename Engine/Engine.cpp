@@ -5,6 +5,9 @@
 #include "SwapChain.h"
 #include "Transform.h"
 #include "Material.h"
+#include "Input.h"
+#include "Timer.h"
+#include "SceneManager.h"
 
 
 void Engine::Init(const WindowInfo& window)
@@ -24,8 +27,6 @@ void Engine::Init(const WindowInfo& window)
 	//_constantBuffers = make_shared<ConstantBuffer>();
 	_singleDescriptorAllocator = make_shared<SingleDescriptorAllocator>();
 	_depthStencilBuffer = make_shared<DepthStencilBuffer>();
-	_input = make_shared<Input>();
-	_timer = make_shared<Timer>();
 
 	_device->Init();
 	_cmdQueue->Init(_device->GetDevice(), _swapChain);
@@ -37,16 +38,18 @@ void Engine::Init(const WindowInfo& window)
 	_singleDescriptorAllocator->Init(4096, D3D12_DESCRIPTOR_HEAP_FLAG_NONE);
 	_depthStencilBuffer->Init(window);
 
-	_input->Init(window.hwnd);
-	_timer->Init();
+	GET_SINGLE(Input)->Init(window.hwnd);
+	GET_SINGLE(Timer)->Init();
 
 	ResizeWindow(window.width, window.height);
 }
 
 void Engine::Update()
 {
-	_input->Update();
-	_timer->Update();
+	GET_SINGLE(Input)->Update();
+	GET_SINGLE(Timer)->Update();
+
+	Render();
 }
 
 void Engine::LateUpdate()
@@ -62,7 +65,7 @@ void Engine::Render()
 {
 	RenderBegin();
 
-	// 여기서 물체를 그린다.
+	GET_SINGLE(SceneManager)->Update();
 
 	RenderEnd();
 }

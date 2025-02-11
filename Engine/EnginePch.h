@@ -86,13 +86,26 @@ struct TEXTURE_HANDLE
 
 class Engine;
 
+#define DECLARE_SINGLE(type)		\
+private:							\
+	type() {}						\
+	~type() {}						\
+public:								\
+	static type* GetInstance()		\
+	{								\
+		static type instance;		\
+		return &instance;			\
+	}								\
+
+#define GET_SINGLE(type) type::GetInstance()
+
 #define DEVICE					GEngine->GetDevice()->GetDevice()
 #define CMD_LIST				GEngine->GetCmdQueue()->GetCmdList()
 #define ROOT_SIGNATURE			GEngine->GetRootSignature()->GetSignature()
 #define RESOURCE_CMD_LIST		GEngine->GetCmdQueue()->GetResourceCmdList()
 
-#define INPUT					GEngine->GetInput()
-#define TIMER					GEngine->GetTimer()
+#define INPUT					GET_SINGLE(Input)
+#define TIMER					GET_SINGLE(Timer)
 #define DELTATIME				GEngine->GetTimer()->GetDeltaTime()
 
 #define CONSTANTBUFFER(type)	GEngine->GetCBByType(type)
