@@ -3,7 +3,7 @@
 #include "Engine.h"
 #include "ConstantBuffer.h"
 
-void Material::Update()
+void Material::PushData()
 {
 	D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle = {};
 	D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle = {};

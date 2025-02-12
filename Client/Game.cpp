@@ -74,3 +74,8 @@ void Game::Update()
 	CONSTANTBUFFER(CONSTANT_BUFFER_TYPE::TRANSFORM)->Reset();
 	CONSTANTBUFFER(CONSTANT_BUFFER_TYPE::MATERIAL)->Reset();
 }
+
+void Game::ResizeWindow(int32 width, int32 height)
+{
+	GEngine->ResizeWindow(width, height);
+}

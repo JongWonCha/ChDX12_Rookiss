@@ -16,6 +16,9 @@ public:
 	ComPtr<ID3D12GraphicsCommandList> GetCmdList() { return _cmdList; }
 	ComPtr<ID3D12GraphicsCommandList> GetResourceCmdList() { return _resCmdList; }
 
+	ComPtr<ID3D12CommandAllocator> GetCmdAlloc() { return _cmdAlloc; }
+	ComPtr<ID3D12CommandAllocator> GetResouceCmdAlloc() { return _resCmdAlloc; }
+
 	~CommandQueue();
 private:
 	ComPtr<ID3D12CommandQueue>			_cmdQueue;

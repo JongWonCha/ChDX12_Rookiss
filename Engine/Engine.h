@@ -32,6 +32,7 @@ public:
 	shared_ptr<DescriptorPool> GetDescriptorPool() { return _descriptorPool; }
 	shared_ptr<SingleDescriptorAllocator> GetSingleDescriptorAllocator() { return _singleDescriptorAllocator; }
 	shared_ptr<DepthStencilBuffer> GetDepthStencilBuffer() { return _depthStencilBuffer; }
+	const WindowInfo& GetWindow() const { return _window; }
 
 
 	void RenderBegin();

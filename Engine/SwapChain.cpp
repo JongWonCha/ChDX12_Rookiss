@@ -11,6 +11,10 @@ void SwapChain::Init(const WindowInfo& window, ComPtr<ID3D12Device> device, ComP
 
 void SwapChain::CreateSwapChain(const WindowInfo& window, ComPtr<IDXGIFactory> dxgi, ComPtr<ID3D12CommandQueue> cmdQueue)
 {
+	if (window.hwnd == nullptr)
+	{
+		return;
+	}
 	_swapChain.Reset();
 
 	DXGI_SWAP_CHAIN_DESC swapChainDesc = {};
@@ -29,6 +33,7 @@ void SwapChain::CreateSwapChain(const WindowInfo& window, ComPtr<IDXGIFactory> d
 	swapChainDesc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
 
 	dxgi->CreateSwapChain(cmdQueue.Get(), &swapChainDesc, &_swapChain);
+
 
 	for (int32 i = 0; i < SWAP_CHAIN_BUFFER_COUNT; i++)
 	{

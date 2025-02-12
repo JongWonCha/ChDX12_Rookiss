@@ -14,6 +14,8 @@ DWORD g_frameCount = 0;
 ULONGLONG   g_prvFrameCheckTick = 0;
 ULONGLONG   g_prvUpdateTick = 0;
 
+unique_ptr<Game> game = make_unique<Game>();
+
 HINSTANCE hInst;                                // 현재 인스턴스입니다.
 WCHAR szTitle[MAX_LOADSTRING];                  // 제목 표시줄 텍스트입니다.
 WCHAR szWindowClass[MAX_LOADSTRING];            // 기본 창 클래스 이름입니다.
@@ -48,12 +50,15 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_CLIENT));
 
     MSG msg;
-    GWindowInfo.width = 1904;
-    GWindowInfo.height = 964;
+    GWindowInfo.width = 1200;
+    GWindowInfo.height = 800;
     GWindowInfo.windowed = true;
 
-    unique_ptr<Game> game = make_unique<Game>();
+    
     game->Init(GWindowInfo);
+    RECT rect = { 0, 0, GWindowInfo.width, GWindowInfo.height };
+    ::AdjustWindowRect(&rect, WS_OVERLAPPEDWINDOW, false);
+    ::SetWindowPos(GWindowInfo.hwnd, 0, 100, 100, GWindowInfo.width, GWindowInfo.height, 0);
 
     // 기본 메시지 루프입니다:
     while (true)
@@ -136,8 +141,13 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
    hInst = hInstance; // 인스턴스 핸들을 전역 변수에 저장합니다.
 
+   /*HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
+      CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, hInstance, nullptr);*/
+
    HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
-      CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, hInstance, nullptr);
+       CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, hInstance, nullptr);
+
+   
 
    if (!hWnd)
    {
@@ -146,6 +156,8 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
    ShowWindow(hWnd, nCmdShow);
    UpdateWindow(hWnd);
+
+   
 
    GWindowInfo.hwnd = hWnd;
 
@@ -189,6 +201,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             HDC hdc = BeginPaint(hWnd, &ps);
             // TODO: 여기에 hdc를 사용하는 그리기 코드를 추가합니다...
             EndPaint(hWnd, &ps);
+        }
+        break;
+    case WM_SIZE:
+        GWindowInfo.width = LOWORD(lParam);
+        GWindowInfo.height = HIWORD(lParam);
+        if (GWindowInfo.hwnd == nullptr) break;
+        if (GEngine)
+        {
+            game->ResizeWindow(LOWORD(lParam), HIWORD(lParam));
         }
         break;
     case WM_DESTROY:

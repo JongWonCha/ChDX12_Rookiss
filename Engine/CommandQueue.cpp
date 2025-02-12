@@ -23,7 +23,7 @@ void CommandQueue::Init(ComPtr<ID3D12Device> device, shared_ptr<SwapChain> swapC
 	device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, _resCmdAlloc.Get(), nullptr, IID_PPV_ARGS(_resCmdList.GetAddressOf()));
 
 	device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&_fence));
-	_fenceEvent = ::CreateEvent(nullptr, FALSE, FALSE, nullptr);
+	//_fenceEvent = ::CreateEvent(nullptr, FALSE, FALSE, nullptr);
 }
 
 void CommandQueue::WaitSync()
@@ -34,9 +34,12 @@ void CommandQueue::WaitSync()
 
 	if (_fence->GetCompletedValue() < _fenceValue)
 	{
-		_fence->SetEventOnCompletion(_fenceValue, _fenceEvent);
+		HANDLE eventHandle = CreateEventEx(nullptr, false, false, EVENT_ALL_ACCESS);
 
-		::WaitForSingleObject(_fenceEvent, INFINITE);
+		_fence->SetEventOnCompletion(_fenceValue, eventHandle);
+
+		::WaitForSingleObject(eventHandle, INFINITE);
+		::CloseHandle(eventHandle);
 	}
 }
 
@@ -45,18 +48,17 @@ void CommandQueue::RenderBegin(const D3D12_VIEWPORT* vp, const D3D12_RECT* rect)
 	_cmdAlloc->Reset();
 	_cmdList->Reset(_cmdAlloc.Get(), nullptr);
 
-	D3D12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
-		_swapChain->GetCurrentBackRTVBuffer().Get(),
-		D3D12_RESOURCE_STATE_PRESENT,
-		D3D12_RESOURCE_STATE_RENDER_TARGET
-		);
+	
+	_cmdList->RSSetViewports(1, vp);
+	_cmdList->RSSetScissorRects(1, rect);
 
 	//_cmdList->SetGraphicsRootSignature(ROOT_SIGNATURE.Get());
 
-	_cmdList->ResourceBarrier(1, &barrier);
-
-	_cmdList->RSSetViewports(1, vp);
-	_cmdList->RSSetScissorRects(1, rect);
+	_cmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(
+		_swapChain->GetCurrentBackRTVBuffer().Get(),
+		D3D12_RESOURCE_STATE_PRESENT,
+		D3D12_RESOURCE_STATE_RENDER_TARGET
+	));
 
 	D3D12_CPU_DESCRIPTOR_HANDLE backBufferView = _swapChain->GetBackRTV();
 	const float BackColor[] = { 0.2f, 0.2f, 0.2f, 1.0f };

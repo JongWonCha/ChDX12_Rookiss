@@ -47,7 +47,7 @@ public:
 	void SetFloat(uint8 index, float value) { _params.SetFloat(index, value); }
 	void SetTexture(uint8 index, const TEXTURE_HANDLE* textureSrv) { _textures[index] = textureSrv; }
 
-	void Update();
+	void PushData();
 
 	Material();
 };

@@ -11,5 +11,6 @@ public:
 
 	D3D12_CPU_DESCRIPTOR_HANDLE	GetDSVCpuHandle() { return _dsvHandle; }
 	DXGI_FORMAT					GetDSVFormat() { return _dsvFormat; }
+	ComPtr<ID3D12Resource>		GetDSVBuffer() { return _dsvBuffer; }
 };
 
