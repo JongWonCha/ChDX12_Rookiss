@@ -8,6 +8,7 @@ enum class COMPONENT_TYPE : uint8
 	CAMERA,
 	// ...
 	MONOBEHAVIOUR,
+	LIGHT,
 	END,
 };
 

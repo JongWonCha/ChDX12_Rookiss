@@ -30,12 +30,16 @@ struct VS_IN
 {
     float3 pos : POSITION;
     float2 uv : TEXCOORD;
+    float3 normal : NORMAL;
+    float4 tangent : TANGENT;
 };
 
 struct VS_OUT
 {
     float4 pos : SV_Position;
     float2 uv : TEXCOORD;
+    float3 normal : NORMAL;
+    float4 tangent : TANGENT;
 };
 
 VS_OUT VS_Main(VS_IN input)
