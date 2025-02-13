@@ -3,6 +3,19 @@
 #include "Engine.h"
 #include "ConstantBuffer.h"
 
+Material::Material() : Object(OBJECT_TYPE::MATERIAL)
+{
+	for (auto It = _textures.begin(); It != _textures.end(); ++It)
+		*It = nullptr;
+
+	_params.SetAllFloat(0.f);
+	_params.SetAllInt(0);
+}
+
+Material::~Material()
+{
+}
+
 void Material::PushData()
 {
 	D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle = {};
@@ -27,11 +40,4 @@ void Material::PushData()
 	_shader->Update();
 }
 
-Material::Material()
-{
-	for (auto It = _textures.begin(); It != _textures.end(); ++It)
-		*It = nullptr;
 
-	_params.SetAllFloat(0.f);
-	_params.SetAllInt(0);
-}

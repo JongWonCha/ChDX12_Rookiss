@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Object.h"
+
 class Shader;
 class Texture;
 
@@ -33,7 +35,7 @@ struct Constant_MaterialParams
 	array<float, MATERIAL_FLOAT_COUNT> floatParams;
 };
 
-class Material
+class Material : public Object
 {
 	shared_ptr<Shader>		_shader;
 	Constant_MaterialParams	_params;
@@ -50,5 +52,6 @@ public:
 	void PushData();
 
 	Material();
+	virtual ~Material();
 };
 

@@ -3,6 +3,24 @@
 #include "SingleDescriptorAllocator.h"
 #include "Engine.h"
 
+Texture::Texture() : Object(OBJECT_TYPE::TEXTURE)
+{
+}
+
+Texture::~Texture()
+{
+	for (auto It = stringTexMap.begin(); It != stringTexMap.end(); ++It)
+	{
+		if (It->second != nullptr)
+		{
+			_singleDescAllocator->FreeDescriptorHandle(It->second->srv);
+			delete It->second;
+		}
+
+	}
+	stringTexMap.clear();
+}
+
 void Texture::Init(const wstring& path, const string &texId, shared_ptr<SingleDescriptorAllocator> singleDescAllocator)
 {
 	if (stringTexMap.find(texId) != stringTexMap.end()) // 이미 있다면
@@ -110,16 +128,4 @@ TEXTURE_HANDLE* Texture::GetTextureHandle(const string& texId)
 	return stringTexMap[texId];
 }
 
-Texture::~Texture()
-{
-	for (auto It = stringTexMap.begin(); It != stringTexMap.end(); ++It)
-	{
-		if (It->second != nullptr)
-		{
-			_singleDescAllocator->FreeDescriptorHandle(It->second->srv);
-			delete It->second;
-		}
-			
-	}
-	stringTexMap.clear();
-}
+

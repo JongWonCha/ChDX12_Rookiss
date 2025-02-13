@@ -1,19 +1,21 @@
 #pragma once
+#include "Object.h"
 
 class Material;
-class Mesh
+class Mesh : public Object
 {
 public:
-	void Init(const vector<Vertex>& vertexVec, const vector<WORD>& indexVec);
+	void Init(const vector<Vertex>& vertexVec, const vector<uint32>& indexVec);
 	void CreateVertexBuffer(const vector<Vertex>& vec);
-	void CreateIndexBuffer(const vector<WORD>& vec);
+	void CreateIndexBuffer(const vector<uint32>& vec);
 	void Render(D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle);
 
 
 	UINT64 Fence();
 	void WaitForFenceValue();
 
-	~Mesh();
+	Mesh();
+	virtual ~Mesh();
 private:
 	ID3D12CommandQueue*			_cmdQueue;
 	ID3D12CommandAllocator*		_cmdAllocator;
@@ -29,6 +31,6 @@ private:
 
 	ComPtr<ID3D12Resource>		_indexBuffer;
 	D3D12_INDEX_BUFFER_VIEW		_indexBufferView = {};
-
+	uint32						_indexCount = 0;
 };
 

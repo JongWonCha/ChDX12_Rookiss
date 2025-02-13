@@ -4,9 +4,48 @@
 #include "Transform.h"
 #include "Material.h"
 
-void Mesh::Init(const vector<Vertex>& vertexVec, const vector<WORD>& indexVec)
+Mesh::Mesh() : Object(OBJECT_TYPE::MESH)
+{
+}
+
+Mesh::~Mesh()
+{
+	if (_pFence)
+	{
+		WaitForFenceValue();
+	}
+
+	if (_cmdQueue)
+	{
+		_cmdQueue->Release();
+		_cmdQueue = nullptr;
+	}
+	if (_cmdList)
+	{
+		_cmdList->Release();
+		_cmdList = nullptr;
+	}
+	if (_cmdAllocator)
+	{
+		_cmdAllocator->Release();
+		_cmdAllocator = nullptr;
+	}
+	if (_hFenceEvent)
+	{
+		CloseHandle(_hFenceEvent);
+		_hFenceEvent = nullptr;
+	}
+	if (_pFence)
+	{
+		_pFence->Release();
+		_pFence = nullptr;
+	}
+}
+
+void Mesh::Init(const vector<Vertex>& vertexVec, const vector<uint32>& indexVec)
 {
 	_vertexCount = static_cast<uint32>(vertexVec.size());
+	_indexCount = static_cast<uint32>(indexVec.size());
 
 	D3D12_COMMAND_QUEUE_DESC queueDesc = {};
 	queueDesc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
@@ -95,12 +134,12 @@ void Mesh::CreateVertexBuffer(const vector<Vertex>& vec)
 	}
 }
 
-void Mesh::CreateIndexBuffer(const vector<WORD>& vec)
+void Mesh::CreateIndexBuffer(const vector<uint32>& vec)
 {
 	HRESULT hr = S_OK;
 
 	ComPtr<ID3D12Resource>	pUploadBuffer = nullptr;
-	UINT					indexBufferSize = sizeof(WORD) * vec.size();
+	uint32					indexBufferSize = sizeof(uint32) * vec.size();
 
 	hr = DEVICE->CreateCommittedResource(
 		&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT),
@@ -165,9 +204,9 @@ void Mesh::CreateIndexBuffer(const vector<WORD>& vec)
 		WaitForFenceValue();
 	}
 
-	_indexBufferView.BufferLocation = _indexBuffer.Get()->GetGPUVirtualAddress();
+	_indexBufferView.BufferLocation = _indexBuffer->GetGPUVirtualAddress();
 	_indexBufferView.SizeInBytes = indexBufferSize;
-	_indexBufferView.Format = DXGI_FORMAT_R16_UINT;
+	_indexBufferView.Format = DXGI_FORMAT_R32_UINT;
 
 	/*if (pUploadBuffer)
 	{
@@ -253,7 +292,7 @@ void Mesh::Render(D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle)
 	CMD_LIST->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	CMD_LIST->IASetVertexBuffers(0, 1, &_vertexBufferView);
 	CMD_LIST->IASetIndexBuffer(&_indexBufferView);
-	CMD_LIST->DrawIndexedInstanced(6, 1, 0, 0, 0);
+	CMD_LIST->DrawIndexedInstanced(_indexCount, 1, 0, 0, 0);
 	//CMD_LIST->DrawInstanced(_vertexCount, 1, 0, 0);
 }
 
@@ -275,36 +314,4 @@ void Mesh::WaitForFenceValue()
 	}
 }
 
-Mesh::~Mesh()
-{
-	if (_pFence)
-	{
-		WaitForFenceValue();
-	}
-	
-	if (_cmdQueue)
-	{
-		_cmdQueue->Release();
-		_cmdQueue = nullptr;
-	}
-	if (_cmdList)
-	{
-		_cmdList->Release();
-		_cmdList = nullptr;
-	}
-	if (_cmdAllocator)
-	{
-		_cmdAllocator->Release();
-		_cmdAllocator = nullptr;
-	}
-	if (_hFenceEvent)
-	{
-		CloseHandle(_hFenceEvent);
-		_hFenceEvent = nullptr;
-	}
-	if (_pFence)
-	{
-		_pFence->Release();
-		_pFence = nullptr;
-	}
-}
+
