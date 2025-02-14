@@ -45,13 +45,19 @@ void Transform::FinalUpdate()
 
 void Transform::PushData()
 {
-	Matrix matWVP = _matWorld * Camera::S_MatView * Camera::S_MatProjection;
-	D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle = {};
-	D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle = {};
-
+	Constant_TransformParams transformParams = {};
+	transformParams.matWorld = _matWorld;
+	transformParams.matView = Camera::S_MatView;
+	transformParams.matProjection = Camera::S_MatProjection;
+	transformParams.matWV = _matWorld * Camera::S_MatView;
+	transformParams.matWVP = _matWorld * Camera::S_MatView * Camera::S_MatProjection;
+	
 	CB_CONTAINER* AllocatedCB = CONSTANTBUFFER(CONSTANT_BUFFER_TYPE::TRANSFORM)->Alloc();
 	Constant_TransformParams* cb = (Constant_TransformParams*)AllocatedCB->pSystemMemAddr;
-	cb->matWVP = matWVP;
+	*cb = transformParams;
+
+	D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle = {};
+	D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle = {};
 	DESCRIPTORPOOL->AllocDescriptorTable(&cpuHandle, &gpuHandle, 1);
 
 	DEVICE->CopyDescriptorsSimple(1, cpuHandle, AllocatedCB->CBVHandle, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);

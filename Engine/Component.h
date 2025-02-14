@@ -6,9 +6,9 @@ enum class COMPONENT_TYPE : uint8
 	TRANSFORM,
 	MESHRENDERER,
 	CAMERA,
+	LIGHT,
 	// ...
 	MONOBEHAVIOUR,
-	LIGHT,
 	END,
 };
 

@@ -221,10 +221,14 @@
     <None Include="SimpleMath.inl">
       <Filter>Utils</Filter>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <CustomBuild Include="..\Resources\Shader\default.hlsl">
+    <None Include="..\Resources\Shader\default.hlsl">
       <Filter>Shader</Filter>
-    </CustomBuild>
+    </None>
+    <None Include="..\Resources\Shader\params.hlsl">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="..\Resources\Shader\utils.hlsl">
+      <Filter>Shader</Filter>
+    </None>
   </ItemGroup>
 </Project>

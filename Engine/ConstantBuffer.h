@@ -2,6 +2,7 @@
 
 enum class CONSTANT_BUFFER_TYPE
 {
+	LIGHT,
 	TRANSFORM,
 	MATERIAL,
 	END
@@ -28,6 +29,7 @@ public:
 	void Init(uint32 elementSize, uint32 elementCount);
 
 	void Reset();
+	void SetGlobalData(void* buffer, uint32 size);
 	CB_CONTAINER * Alloc();
 
 private:
@@ -38,7 +40,7 @@ private:
 
 	ComPtr<ID3D12Resource>			_cbvBuffer;
 	ComPtr<ID3D12DescriptorHeap>	_descriptorHeap = nullptr;
-	UINT8*							_systemMemAddr = nullptr;
+	BYTE*							_systemMemAddr = nullptr;
 	uint32							_elementSize = 0;
 	uint32							_elementCount = 0;
 

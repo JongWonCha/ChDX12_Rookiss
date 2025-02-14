@@ -29,6 +29,7 @@ void Material::PushData()
 
 	//CD3DX12_CPU_DESCRIPTOR_HANDLE cbvDesc(cpuHandle, 0, DESCRIPTORPOOL->GetSrvDescirptorSize());
 	DEVICE->CopyDescriptorsSimple(1, cpuHandle, allocatedCB->CBVHandle, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	DESCRIPTORPOOL->AllocDescriptorTable(&cpuHandle, &gpuHandle, 2);
 
 	for (int i = 0; i < MATERIAL_TEXTURE_COUNT; ++i)
 	{

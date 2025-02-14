@@ -9,6 +9,7 @@
 #include "Timer.h"
 #include "SceneManager.h"
 #include "Camera.h"
+#include "Light.h"
 
 
 void Engine::Init(const WindowInfo& window)
@@ -23,8 +24,9 @@ void Engine::Init(const WindowInfo& window)
 	_swapChain = make_shared<SwapChain>();
 	_rootSignature = make_shared<RootSignature>();
 	_descriptorPool = make_shared<DescriptorPool>();
-	_constantBuffers.emplace_back(make_shared<ConstantBuffer>()); //
-	_constantBuffers.emplace_back(make_shared<ConstantBuffer>());
+	_constantBuffers.emplace_back(make_shared<ConstantBuffer>()); // lightParams
+	_constantBuffers.emplace_back(make_shared<ConstantBuffer>()); // TransformParams
+	_constantBuffers.emplace_back(make_shared<ConstantBuffer>()); // MaterialParams
 	//_constantBuffers = make_shared<ConstantBuffer>();
 	_singleDescriptorAllocator = make_shared<SingleDescriptorAllocator>();
 	_depthStencilBuffer = make_shared<DepthStencilBuffer>();
@@ -33,9 +35,10 @@ void Engine::Init(const WindowInfo& window)
 	_cmdQueue->Init(_device->GetDevice(), _swapChain);
 	_swapChain->Init(window, _device->GetDevice(), _device->GetDXGI(), _cmdQueue->GetCmdQueue());
 	_rootSignature->Init();
-	_descriptorPool->Init(_device->GetDevice(), 256 * 2);
-	_constantBuffers[0]->Init(sizeof(Constant_TransformParams), 256);
-	_constantBuffers[1]->Init(sizeof(Constant_MaterialParams), 256 * 2);
+	_descriptorPool->Init(_device->GetDevice(), 256 * 9); // 오브젝트 갯수 * 오브젝트 당 넘겨줄 레지스터 갯수(b1 ~ b4, t0 ~ t4)
+	_constantBuffers[0]->Init(sizeof(Constant_LightParams), 1);
+	_constantBuffers[1]->Init(sizeof(Constant_TransformParams), 256);
+	_constantBuffers[2]->Init(sizeof(Constant_MaterialParams), 256);
 	_singleDescriptorAllocator->Init(4096, D3D12_DESCRIPTOR_HEAP_FLAG_NONE);
 	_depthStencilBuffer->Init(window);
 

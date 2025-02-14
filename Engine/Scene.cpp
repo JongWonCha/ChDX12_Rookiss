@@ -1,6 +1,10 @@
 #include "pch.h"
 #include "Scene.h"
 #include "GameObject.h"
+#include "Camera.h"
+#include "Engine.h"
+#include "ConstantBuffer.h"
+#include "Light.h"
 
 void Scene::Awake()
 {
@@ -40,6 +44,48 @@ void Scene::FinalUpdate()
 	{
 		gameObject->FinalUpdate();
 	}
+}
+
+void Scene::Render()
+{
+	PushLightData();
+
+	for (auto& gameObject : _gameObjects)
+	{
+		if (gameObject->GetCamera() == nullptr) continue;
+
+		gameObject->GetCamera()->Render();
+	}
+}
+
+void Scene::PushLightData()
+{
+	/*CB_CONTAINER* lightCB = CONSTANTBUFFER(CONSTANT_BUFFER_TYPE::LIGHT)->Alloc();
+	Constant_LightParams* lightParams = (Constant_LightParams*)lightCB->pSystemMemAddr;
+
+	for (auto& gameObject : _gameObjects)
+	{
+		if (gameObject->GetLight() == nullptr) continue;
+
+		const LightInfo& lightInfo = gameObject->GetLight()->GetLightInfo();
+
+		lightParams->lights[lightParams->lightCount] = lightInfo;
+		lightParams->lightCount++;
+	}
+	CMD_LIST->SetGraphicsRootConstantBufferView(0, lightCB->pGPUMemAddr);*/
+
+	Constant_LightParams lightParams = {};
+	for (auto& gameObject : _gameObjects)
+	{
+		if (gameObject->GetLight() == nullptr)
+			continue;
+
+		const LightInfo& lightInfo = gameObject->GetLight()->GetLightInfo();
+
+		lightParams.lights[lightParams.lightCount] = lightInfo;
+		lightParams.lightCount++;
+	}
+	CONSTANTBUFFER(CONSTANT_BUFFER_TYPE::LIGHT)->SetGlobalData(&lightParams, sizeof(lightParams));
 }
 
 void Scene::AddGameObject(shared_ptr<GameObject> gameObject)

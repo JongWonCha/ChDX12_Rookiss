@@ -287,7 +287,7 @@ void Mesh::Render(D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle)
 		D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV
 	);*/
 
-	CMD_LIST->SetGraphicsRootDescriptorTable(0, gpuHandle);
+	CMD_LIST->SetGraphicsRootDescriptorTable(1, gpuHandle);
 
 	CMD_LIST->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	CMD_LIST->IASetVertexBuffers(0, 1, &_vertexBufferView);

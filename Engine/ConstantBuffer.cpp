@@ -65,7 +65,7 @@ void ConstantBuffer::CreateBuffer()
 	cbvDesc.BufferLocation = _cbvBuffer.Get()->GetGPUVirtualAddress();
 	cbvDesc.SizeInBytes = _elementSize;
 
-	UINT8* pSystemMemAddr = _systemMemAddr;
+	BYTE* pSystemMemAddr = _systemMemAddr;
 	CD3DX12_CPU_DESCRIPTOR_HANDLE heapHandle(_descriptorHeap.Get()->GetCPUDescriptorHandleForHeapStart());
 
 	UINT descriptorSize = DEVICE->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
@@ -87,6 +87,13 @@ void ConstantBuffer::CreateBuffer()
 void ConstantBuffer::Reset()
 {
 	_currentIndex = 0;
+}
+
+void ConstantBuffer::SetGlobalData(void* buffer, uint32 size)
+{
+	assert(_elementSize == ((size + 255) & ~255));
+	::memcpy(&_systemMemAddr[0], buffer, size);
+	CMD_LIST->SetGraphicsRootConstantBufferView(0, _cbvBuffer->GetGPUVirtualAddress());
 }
 
 CB_CONTAINER* ConstantBuffer::Alloc()
