@@ -61,7 +61,7 @@ void CommandQueue::RenderBegin(const D3D12_VIEWPORT* vp, const D3D12_RECT* rect)
 	));
 
 	D3D12_CPU_DESCRIPTOR_HANDLE backBufferView = _swapChain->GetBackRTV();
-	const float BackColor[] = { 0.2f, 0.2f, 0.2f, 1.0f };
+	const float BackColor[] = { 0.f, 0.f, 0.f, 1.0f };
 	_cmdList->ClearRenderTargetView(backBufferView, BackColor, 0, nullptr);
 	
 	D3D12_CPU_DESCRIPTOR_HANDLE depthStencilView = GEngine->GetDepthStencilBuffer()->GetDSVCpuHandle();
