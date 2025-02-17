@@ -41,14 +41,15 @@ float4 PS_Main(VS_OUT input) : SV_Target
 {
     float4 color = float4(1.f, 1.f, 1.f, 1.f);
     
-    if(g_tex_on_0)
+    if (g_tex_on_0)
         color = g_tex_0.Sample(g_sam_0, input.uv);
     
     float3 viewNormal = input.viewNormal;
-    if(g_tex_on_1)
+    if (g_tex_on_1)
     {
+        // [0,255] 범위에서 [0,1]로 변환
         float3 tangentSpaceNormal = g_tex_1.Sample(g_sam_0, input.uv).xyz;
-        
+        // [0,1] 범위에서 [-1,1]로 변환
         tangentSpaceNormal = (tangentSpaceNormal - 0.5f) * 2.f;
         float3x3 matTBN = { input.viewTangent, input.viewBinormal, input.viewNormal };
         viewNormal = normalize(mul(tangentSpaceNormal, matTBN));

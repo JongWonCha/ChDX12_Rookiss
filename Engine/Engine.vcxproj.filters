@@ -120,6 +120,9 @@
     <ClInclude Include="Light.h">
       <Filter>Object\Components</Filter>
     </ClInclude>
+    <ClInclude Include="RenderTargetGroup.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -215,20 +218,25 @@
     <ClCompile Include="Light.cpp">
       <Filter>Object\Components</Filter>
     </ClCompile>
+    <ClCompile Include="RenderTargetGroup.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
     <None Include="SimpleMath.inl">
       <Filter>Utils</Filter>
     </None>
-    <None Include="..\Resources\Shader\default.hlsl">
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="..\Resources\Shader\default.hlsl">
       <Filter>Shader</Filter>
-    </None>
-    <None Include="..\Resources\Shader\params.hlsl">
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shader\params.hlsl">
       <Filter>Shader</Filter>
-    </None>
-    <None Include="..\Resources\Shader\utils.hlsl">
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shader\utils.hlsl">
       <Filter>Shader</Filter>
-    </None>
+    </FxCompile>
   </ItemGroup>
 </Project>

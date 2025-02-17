@@ -2,6 +2,11 @@
 #include "Resources.h"
 
 
+void Resources::Init()
+{
+	CreateDefaultShader();
+}
+
 shared_ptr<Mesh> Resources::LoadCubeMesh()
 {
 	shared_ptr<Mesh> findMesh = Get<Mesh>(L"Cube");
@@ -189,4 +194,18 @@ shared_ptr<Mesh> Resources::LoadSphereMesh()
 	Add(L"Sphere", mesh);
 
 	return mesh;
+}
+
+void Resources::CreateDefaultShader()
+{
+	{
+		ShaderInfo info =
+		{
+			SHADER_TYPE::FORWARD,
+		};
+
+		shared_ptr<Shader> shader = make_shared<Shader>();
+		shader->Init(L"..\\Resources\\Shader\\default.hlsl", info);
+		Add<Shader>(L"Default", shader);
+	}
 }

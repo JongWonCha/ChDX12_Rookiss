@@ -1,14 +1,18 @@
 #pragma once
 #include "IndexCreator.h"
 
+// 텍스처에 관한 모든 디스크립터를 모아둔 클래스
 
-// Texture 또는 UAV 리소스를 공유하고 유지하기 위해 Descriptor를 동적으로 할당하고 관리할 수 있는 체계.
+// Texture(SRV) 또는 UAV 리소스를 공유하고 유지하기 위해 Descriptor를 동적으로 할당하고 관리할 수 있는 체계.
 // 셰이더 제출 디스크립터 힙(Des)에 복사할 Source 디스크립터 힙 용도
+ 
 class SingleDescriptorAllocator
 {
-	ComPtr<ID3D12DescriptorHeap> _descHeap = nullptr;
-	IndexCreator				_indexCreator;
-	UINT						_descSize = 0;
+	ComPtr<ID3D12DescriptorHeap>	_SRVUAVDescHeap = nullptr;	// use for SRV, UAV
+	
+	UINT							_SRVUAVDescSize = 0;
+
+	IndexCreator					_indexCreator;
 
 	void Cleanup();
 
@@ -18,7 +22,7 @@ public:
 	void	FreeDescriptorHandle(D3D12_CPU_DESCRIPTOR_HANDLE descriptorHandle);
 	BOOL	Check(D3D12_CPU_DESCRIPTOR_HANDLE descriptorHandle);
 	D3D12_GPU_DESCRIPTOR_HANDLE	GetGPUHandleFromCPUHandle(D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle);
-	ComPtr<ID3D12DescriptorHeap>	GetDescriptorHeap() { return _descHeap; }
+	ComPtr<ID3D12DescriptorHeap> GetSRVUAVDescriptorHeap() { return _SRVUAVDescHeap; }
 
 	SingleDescriptorAllocator();
 	~SingleDescriptorAllocator();

@@ -118,8 +118,9 @@ public:								\
 #define TIMER					GET_SINGLE(Timer)
 #define DELTATIME				GET_SINGLE(Timer)->GetDeltaTime()
 
-#define CONSTANTBUFFER(type)	GEngine->GetCBByType(type)
-#define DESCRIPTORPOOL			GEngine->GetDescriptorPool()
+#define CONSTANTBUFFER(type)		GEngine->GetCBByType(type)
+#define DESCRIPTORPOOL				GEngine->GetDescriptorPool()
+#define SINGLEDESCRIPTORALLOCATOR	GEngine->GetSingleDescriptorAllocator()
 
 struct Constant_TransformParams
 {

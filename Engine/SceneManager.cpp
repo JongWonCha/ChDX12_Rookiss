@@ -13,7 +13,7 @@
 #include "TestCameraScript.h"
 #include "Resources.h"
 
-shared_ptr<Texture> texture = make_shared<Texture>();
+//shared_ptr<Texture> texture = make_shared<Texture>();
 
 void SceneManager::Update()
 {
@@ -45,10 +45,10 @@ void SceneManager::LoadScene(wstring sceneName)
 shared_ptr<Scene> SceneManager::LoadTestScene()
 {
 	shared_ptr<Scene> scene = make_shared<Scene>();
-	texture->Init(L"..\\Resources\\Texture\\Stone_normal.png", "normal", GEngine->GetSingleDescriptorAllocator());
-	texture->Init(L"..\\Resources\\Texture\\Stone_basecolor.png", "base", GEngine->GetSingleDescriptorAllocator());
+	/*texture->Init(L"..\\Resources\\Texture\\cliff_normal.dds", "normal", GEngine->GetSingleDescriptorAllocator());
+	texture->Init(L"..\\Resources\\Texture\\cliff_base.dds", "base", GEngine->GetSingleDescriptorAllocator());*/
 	shared_ptr<Mesh> sphereMesh = GET_SINGLE(Resources)->LoadSphereMesh();
-	//shared_ptr<Mesh> cubeMesh = GET_SINGLE(Resources)->LoadCubeMesh();
+	shared_ptr<Mesh> cubeMesh = GET_SINGLE(Resources)->LoadCubeMesh();
 #pragma region Camera
 	shared_ptr<GameObject> camera = make_shared<GameObject>();
 	camera->AddComponent(make_shared<Transform>());
@@ -61,19 +61,20 @@ shared_ptr<Scene> SceneManager::LoadTestScene()
 #pragma region Cube
 	{
 		shared_ptr<GameObject> sphere = make_shared<GameObject>();
+		shared_ptr<Texture> base = GET_SINGLE(Resources)->Load<Texture>(L"base", L"..\\Resources\\Texture\\cliff_base.dds");
+		shared_ptr<Texture> normal = GET_SINGLE(Resources)->Load<Texture>(L"normal", L"..\\Resources\\Texture\\cliff_normal.dds");
 		sphere->AddComponent(make_shared<Transform>());
 		sphere->GetTransform()->SetLocalScale(Vec3(100.f, 100.f, 100.f));
 		sphere->GetTransform()->SetLocalPosition(Vec3(0.f, 0.f, 150.f));
 		shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
-		meshRenderer->SetMesh(sphereMesh);
+		meshRenderer->SetMesh(cubeMesh);
 		
 		{
-			shared_ptr<Shader> shader = make_shared<Shader>();
-			shader->Init(L"..\\Resources\\Shader\\default.hlsl");
+			shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"Default");
 			shared_ptr<Material> material = make_shared<Material>();
 			material->SetShader(shader);
-			material->SetTexture(0, texture->GetTextureHandle("base"));
-			material->SetTexture(1, texture->GetTextureHandle("normal"));
+			material->SetTexture(0, base);
+			material->SetTexture(1, normal);
 			meshRenderer->SetMaterial(material);
 		}
 		sphere->AddComponent(meshRenderer);
@@ -112,8 +113,8 @@ shared_ptr<Scene> SceneManager::LoadTestScene()
 		light->GetLight()->SetLightDirection(Vec3(1.f, 0.f, 1.f));
 		light->GetLight()->SetLightType(LIGHT_TYPE::DIRECTIONAL_LIGHT);
 		light->GetLight()->SetDiffuse(Vec3(0.5f, 0.5f, 0.5f));
-		light->GetLight()->SetAmbient(Vec3(0.f, 0.1f, 0.f));
-		light->GetLight()->SetSpecular(Vec3(0.1f, 0.1f, 0.1f));
+		light->GetLight()->SetAmbient(Vec3(0.f, 0.f, 0.f));
+		light->GetLight()->SetSpecular(Vec3(0.f, 0.f, 0.f));
 
 		scene->AddGameObject(light);
 	}

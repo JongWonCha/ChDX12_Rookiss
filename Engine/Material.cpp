@@ -35,7 +35,7 @@ void Material::PushData()
 	{
 		DESCRIPTORPOOL->AllocDescriptorTable(&cpuHandle, &gpuHandle, 1);
 		if(_textures[i])
-			DEVICE->CopyDescriptorsSimple(1, cpuHandle, _textures[i]->srv, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+			DEVICE->CopyDescriptorsSimple(1, cpuHandle, _textures[i]->GetTextureHandle()->srv, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	}
 
 	_shader->Update();

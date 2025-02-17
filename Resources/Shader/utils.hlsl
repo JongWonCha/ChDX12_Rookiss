@@ -1,6 +1,8 @@
 #ifndef _UTILS_HLSL_
 #define _UTILS_HLSL_
 
+#include "params.hlsl"
+
 LightColor CalculateLightColor(int lightIndex, float3 viewNormal, float3 viewPos)
 {
     LightColor color = (LightColor) 0.f;

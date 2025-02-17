@@ -41,7 +41,7 @@ class Material : public Object
 {
 	shared_ptr<Shader>		_shader;
 	Constant_MaterialParams	_params;
-	array<const TEXTURE_HANDLE*, MATERIAL_TEXTURE_COUNT> _textures;
+	array<shared_ptr<Texture>, MATERIAL_TEXTURE_COUNT> _textures;
 
 public:
 	shared_ptr<Shader> GetShader() { return _shader; }
@@ -49,10 +49,10 @@ public:
 	void SetShader(shared_ptr<Shader> shader) { _shader = shader; }
 	void SetInt(uint8 index, int32 value) { _params.SetInt(index, value); }
 	void SetFloat(uint8 index, float value) { _params.SetFloat(index, value); }
-	void SetTexture(uint8 index, const TEXTURE_HANDLE* textureSrv)
+	void SetTexture(uint8 index, shared_ptr<Texture> texture)
 	{
-		_textures[index] = textureSrv; 
-		_params.SetTexOn(index, (textureSrv == nullptr) ? 0 : 1);
+		_textures[index] = texture;
+		_params.SetTexOn(index, (texture == nullptr) ? 0 : 1);
 	}
 
 	void PushData();
