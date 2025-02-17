@@ -43,6 +43,9 @@ public:
 	void ResizeWindow(int32 width, int32 height);
 
 private:
+	void CreateRenderTargetGroups();
+
+private:
 	WindowInfo		_window;
 	D3D12_VIEWPORT	_viewport = {};
 	D3D12_RECT		_scissorRect = {};
@@ -56,5 +59,6 @@ private:
 	shared_ptr<SingleDescriptorAllocator>	_singleDescriptorAllocator;
 	shared_ptr<DepthStencilBuffer>			_depthStencilBuffer;
 
+	array<shared_ptr<RenderTargetGroup>, RENDER_TARGET_GROUP_COUNT> _rtGroups;
 };
 

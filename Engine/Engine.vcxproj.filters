@@ -229,7 +229,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="..\Resources\Shader\default.hlsl">
+    <FxCompile Include="..\Resources\Shader\forward.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
     <FxCompile Include="..\Resources\Shader\params.hlsl">

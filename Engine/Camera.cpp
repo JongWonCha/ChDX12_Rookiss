@@ -29,13 +29,13 @@ void Camera::FinalUpdate()
 		_matProjection = ::XMMatrixPerspectiveFovLH(_fov, width / height, _near, _far);
 	else
 		_matProjection = ::XMMatrixOrthographicLH(width * _scale, height * _scale, _near, _far);
-
-	S_MatView = _matView;
-	S_MatProjection = _matProjection;
 }
 
 void Camera::Render()
 {
+	S_MatView = _matView;
+	S_MatProjection = _matProjection;
+
 	shared_ptr<Scene> scene = GET_SINGLE(SceneManager)->GetActiveScene();
 
 	// TODO : Layer
@@ -44,6 +44,9 @@ void Camera::Render()
 	for (auto& gameObject : gameObjects)
 	{
 		if (gameObject->GetMeshRenderer() == nullptr)
+			continue;
+
+		if (IsCulled(gameObject->GetLayerIndex()))
 			continue;
 
 		gameObject->GetMeshRenderer()->Render();

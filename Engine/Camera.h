@@ -16,6 +16,21 @@ public:
 	virtual void FinalUpdate() override;
 	void Render();
 
+	void SetProjectionType(PROJECTION_TYPE type) { _type = type; }
+	PROJECTION_TYPE GetProjectionType() { return _type; }
+
+	void SetCullingMaskLayerOnOff(uint8 layer, bool on)
+	{
+		if (on)
+			_cullingMask |= (1 << layer);
+		else
+			_cullingMask &= ~(1 << layer);
+	}
+
+	void SetCullingMaskAll() { SetCullingMask(UINT32_MAX); }
+	void SetCullingMask(uint32 mask) { _cullingMask = mask; }
+	bool IsCulled(uint8 layer) { return (_cullingMask & (1 << layer)) != 0; }
+
 private:
 	PROJECTION_TYPE _type = PROJECTION_TYPE::PERSPECTIVE;
 
@@ -26,6 +41,8 @@ private:
 
 	Matrix _matView = {};
 	Matrix _matProjection = {};
+
+	uint32 _cullingMask = 0;// 비트와이즈 연산으로 레이어를 체크할 것이기 때문에 uint32로 선언, 비트 값이 0이면 렌더링 함.
 
 public:
 	// temp

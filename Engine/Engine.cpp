@@ -40,12 +40,14 @@ void Engine::Init(const WindowInfo& window)
 	_constantBuffers[0]->Init(sizeof(Constant_LightParams), 1);
 	_constantBuffers[1]->Init(sizeof(Constant_TransformParams), 256);
 	_constantBuffers[2]->Init(sizeof(Constant_MaterialParams), 256);
-	_singleDescriptorAllocator->Init(4096, D3D12_DESCRIPTOR_HEAP_FLAG_NONE);
+	_singleDescriptorAllocator->Init(4096, 10, 1, D3D12_DESCRIPTOR_HEAP_FLAG_NONE);
 	_depthStencilBuffer->Init(window);
 
 	GET_SINGLE(Input)->Init(window.hwnd);
 	GET_SINGLE(Timer)->Init();
 	GET_SINGLE(Resources)->Init();
+
+	//CreateRenderTargetGroups();
 
 	ResizeWindow(window.width, window.height);
 }
@@ -136,5 +138,47 @@ void Engine::ResizeWindow(int32 width, int32 height)
 
 	_scissorRect = CD3DX12_RECT(0, 0, width, height);
 	_viewport = { 0, 0, static_cast<FLOAT>(width), static_cast<FLOAT>(height), 0.0f, 1.0f };
+}
+
+void Engine::CreateRenderTargetGroups()
+{
+	// DepthStencilBuffer
+
+	shared_ptr<Texture> dsTexture = GET_SINGLE(Resources)->CreateTexture(L"DepthStencil", DXGI_FORMAT_D32_FLOAT, _window.width, _window.height,
+		CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT), D3D12_HEAP_FLAG_NONE, D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL);
+	
+
+	// Swap Chain Group
+	{
+		vector<RenderTarget> rtVec(SWAP_CHAIN_BUFFER_COUNT);
+
+		for (uint32 i = 0; i < SWAP_CHAIN_BUFFER_COUNT; ++i)
+		{
+			wstring name = L"SwapChainTarget_" + std::to_wstring(i);
+
+			ComPtr<ID3D12Resource> rtResource;
+			_swapChain->GetSwapChain()->GetBuffer(i, IID_PPV_ARGS(&rtResource));
+			rtVec[i].target = GET_SINGLE(Resources)->CreateTextureFromResource(name, rtResource);
+		}
+
+		_rtGroups[static_cast<uint8>(RENDER_TARGET_GROUP_TYPE::SWAP_CHAIN)] = make_shared<RenderTargetGroup>();
+		_rtGroups[static_cast<uint8>(RENDER_TARGET_GROUP_TYPE::SWAP_CHAIN)]->Create(RENDER_TARGET_GROUP_TYPE::SWAP_CHAIN, rtVec);
+	}
+
+	// Deffered Group
+	{
+		vector<RenderTarget> rtVec(RENDER_TARGET_G_BUFFER_GROUP_MEMBER_COUNT);
+
+		rtVec[0].target = GET_SINGLE(Resources)->CreateTexture(L"PositionTarget", DXGI_FORMAT_R32G32B32A32_FLOAT, _window.width, _window.height,
+			CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT), D3D12_HEAP_FLAG_NONE, D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET);
+		rtVec[1].target = GET_SINGLE(Resources)->CreateTexture(L"NormalTarget", DXGI_FORMAT_R32G32B32A32_FLOAT, _window.width, _window.height,
+			CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT), D3D12_HEAP_FLAG_NONE, D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET);
+		rtVec[2].target = GET_SINGLE(Resources)->CreateTexture(L"DiffuseTarget", DXGI_FORMAT_R8G8B8A8_UNORM, _window.width, _window.height,
+			CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT), D3D12_HEAP_FLAG_NONE, D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET);
+
+		_rtGroups[static_cast<uint8>(RENDER_TARGET_GROUP_TYPE::G_BUFFER)] = make_shared<RenderTargetGroup>();
+		_rtGroups[static_cast<uint8>(RENDER_TARGET_GROUP_TYPE::G_BUFFER)]->Create(RENDER_TARGET_GROUP_TYPE::G_BUFFER, rtVec);
+	}
+
 }
 

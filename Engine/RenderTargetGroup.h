@@ -23,7 +23,7 @@ struct RenderTarget
 class RenderTargetGroup
 {
 public:
-	void Create(RENDER_TARGET_GROUP_TYPE groupType, vector<RenderTarget>& rtVec, shared_ptr<Texture> dsTexture);
+	void Create(RENDER_TARGET_GROUP_TYPE groupType, vector<RenderTarget>& rtVec);
 
 	void OMSetRenderTargets(uint32 count, uint32 offset);
 	void OMSetRenderTargets();
@@ -35,14 +35,14 @@ public:
 	shared_ptr<Texture> GetDSTexture() { return _dsTexture; }
 
 private:
-	RENDER_TARGET_GROUP_TYPE _groupType;
-	vector<RenderTarget> _rtVec;
-	uint32 _rtCount;
-	shared_ptr<Texture> _dsTexture;	
-	ComPtr<ID3D12DescriptorHeap> _rtvHeap;
+	RENDER_TARGET_GROUP_TYPE		_groupType;
+	vector<RenderTarget>			_rtVec;
+	uint32							_rtCount;
+	shared_ptr<Texture>				_dsTexture;	
+	ComPtr<ID3D12DescriptorHeap>	_rtvHeap;
 
 private:
-	uint32 _rtvHeapSize;
+	uint32						_rtvHeapSize;
 	D3D12_CPU_DESCRIPTOR_HANDLE _rtvHeapBegin;
 	D3D12_CPU_DESCRIPTOR_HANDLE _dsvHeapBegin;
 };

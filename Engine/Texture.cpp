@@ -19,23 +19,23 @@ Texture::~Texture()
 
 	}
 	stringTexMap.clear();*/
-	SINGLEDESCRIPTORALLOCATOR->FreeDescriptorHandle(_textureHandle->srv);
+	SINGLEDESCRIPTORALLOCATOR->FreeDescriptorHandleForSRVUAV(_textureHandle->descriptor);
 	_textureHandle = nullptr;
 
 }
 
-void Texture::Init(const wstring& path, const string &texId, shared_ptr<SingleDescriptorAllocator> singleDescAllocator)
+void Texture::Init(const wstring& path, const string& texId)
 {
 	//if (stringTexMap.find(texId) != stringTexMap.end()) // 이미 있다면
 	//{
 	//	return;
 	//}
-	_singleDescAllocator = singleDescAllocator;
 	CreateTextureResource(path, texId);
 }
 
 void Texture::Load(const wstring& path)
 {
+	// TODO : PNG 파일 로드 시 잘못 로드되는 문제 해결
 	ComPtr<ID3D12Resource> textureUploadHeap;
 	ComPtr<ID3D12Resource> texResource;
 	ScratchImage image;
@@ -93,9 +93,49 @@ void Texture::Load(const wstring& path)
 		static_cast<unsigned int>(subResources.size()),
 		subResources.data());
 
+	_textureType = TEXTURE_TYPE::SRV_UAV;
+
 	GEngine->GetCmdQueue()->FlushResourceCommandQueue();
 
 	CreateView(texResource, &image, "default");
+}
+
+void Texture::Create(DXGI_FORMAT format, uint32 width, uint32 height,
+	const D3D12_HEAP_PROPERTIES& heapProperty, D3D12_HEAP_FLAGS heapFlags,
+	D3D12_RESOURCE_FLAGS resFlags, Vec4 clearColor)
+{
+	ComPtr<ID3D12Resource> texResource;
+
+	D3D12_RESOURCE_DESC desc = CD3DX12_RESOURCE_DESC::Tex2D(format, width, height);
+	desc.Flags = resFlags;
+
+	D3D12_CLEAR_VALUE optimizedClearValue = {};
+	D3D12_RESOURCE_STATES resoucesStates = D3D12_RESOURCE_STATE_COMMON;
+
+	if (resFlags & D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL)
+	{
+		resoucesStates = D3D12_RESOURCE_STATE_DEPTH_WRITE;
+		optimizedClearValue = CD3DX12_CLEAR_VALUE(DXGI_FORMAT_D32_FLOAT, 1.0f, 0);
+	}
+	else if (resFlags & D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET)
+	{
+		resoucesStates = D3D12_RESOURCE_STATE_RENDER_TARGET;
+		float arrFloat[4] = { clearColor.x, clearColor.y, clearColor.z, clearColor.w };
+		optimizedClearValue = CD3DX12_CLEAR_VALUE(format, arrFloat);
+	}
+
+	HREFTYPE hr = DEVICE->CreateCommittedResource(
+		&heapProperty,
+		heapFlags,
+		&desc,
+		resoucesStates,
+		&optimizedClearValue,
+		IID_PPV_ARGS(texResource.GetAddressOf())
+	);
+
+	assert(SUCCEEDED(hr));
+
+	CreateFromResource(texResource);
 }
 
 void Texture::CreateTextureResource(const wstring& path, const string& texId)
@@ -162,6 +202,42 @@ void Texture::CreateTextureResource(const wstring& path, const string& texId)
 	CreateView(texResource, &image, texId);
 }
 
+void Texture::CreateFromResource(ComPtr<ID3D12Resource> tex2D)
+{
+	D3D12_CPU_DESCRIPTOR_HANDLE descriptorHandle = {};
+	D3D12_RESOURCE_DESC desc = tex2D->GetDesc();
+
+	if (desc.Flags & D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL)
+	{
+		if (SINGLEDESCRIPTORALLOCATOR->AllocDescriptorHandleForDSV(&descriptorHandle))
+		{
+			DEVICE->CreateDepthStencilView(tex2D.Get(), nullptr, descriptorHandle);
+
+			_textureHandle = make_shared<TEXTURE_HANDLE>();
+			_textureHandle->pTexResource = tex2D.Get();
+			_textureHandle->descriptor = descriptorHandle;
+			_textureType = TEXTURE_TYPE::DSV;
+		}
+	}
+	else if (desc.Flags & D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET)
+	{
+		// TODO : 렌더 타겟 뷰 생성
+		if (SINGLEDESCRIPTORALLOCATOR->AllocDescriptorHandleForRTV(&descriptorHandle))
+		{
+			DEVICE->CreateRenderTargetView(tex2D.Get(), nullptr, descriptorHandle);
+			_textureHandle = make_shared<TEXTURE_HANDLE>();
+			_textureHandle->pTexResource = tex2D.Get();
+			_textureHandle->descriptor = descriptorHandle;
+			_textureType = TEXTURE_TYPE::RTV;
+		}
+	}
+	else
+	{
+		__debugbreak();
+		// TODO : 셰이더 리소스 뷰 생성
+	}
+}
+
 void Texture::CreateView(ComPtr<ID3D12Resource> texResource, ScratchImage* image, const string& texId)
 {
 	D3D12_CPU_DESCRIPTOR_HANDLE srv = {};
@@ -172,15 +248,13 @@ void Texture::CreateView(ComPtr<ID3D12Resource> texResource, ScratchImage* image
 	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
 	srvDesc.Texture2D.MipLevels = image->GetMetadata().mipLevels;
 
-	if (SINGLEDESCRIPTORALLOCATOR->AllocDescriptorHandle(&srv))
+	if (SINGLEDESCRIPTORALLOCATOR->AllocDescriptorHandleForSRVUAV(&srv))
 	{
 		DEVICE->CreateShaderResourceView(texResource.Get(), &srvDesc, srv);
 
-		//shared_ptr<TEXTURE_HANDLE> tempHandle = make_shared<TEXTURE_HANDLE>();
 		_textureHandle = make_shared<TEXTURE_HANDLE>();
 		_textureHandle->pTexResource = texResource.Get();
-		_textureHandle->srv = srv;
-		//stringTexMap[texId] = tempHandle;
+		_textureHandle->descriptor = srv;
 	}
 }
 

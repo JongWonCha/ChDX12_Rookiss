@@ -13,6 +13,8 @@ class GameObject : public Object, public enable_shared_from_this<GameObject>
 	array<shared_ptr<Component>, FIXED_COMPONENT_COUNT> _components;
 	vector<shared_ptr<MonoBehaviour>> _scripts;
 
+	uint8 _layerIndex = 0;
+
 public:
 	GameObject();
 	virtual ~GameObject();
@@ -33,5 +35,8 @@ public:
 	shared_ptr<Light>			GetLight();
 
 	void AddComponent(shared_ptr<Component> component);
+
+	void SetLayerIndex(uint8 index) { _layerIndex = index; }
+	uint8 GetLayerIndex() const { return _layerIndex; }
 };
 
