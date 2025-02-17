@@ -2,7 +2,6 @@
 #define _DEFAULT_HLSL_
 
 #include "params.hlsl"
-#include "utils.hlsl"
 
 struct VS_IN
 {
@@ -37,8 +36,17 @@ VS_OUT VS_Main(VS_IN input)
     return output;
 }
 
-float4 PS_Main(VS_OUT input) : SV_Target
+struct PS_OUT
 {
+    float4 position : SV_Target0;
+    float4 normal : SV_Target1;
+    float4 color : SV_Target2;
+};
+
+PS_OUT PS_Main(VS_OUT input)
+{
+    PS_OUT output = (PS_OUT) 0;
+    
     float4 color = float4(1.f, 1.f, 1.f, 1.f);
     
     if (g_tex_on_0)
@@ -54,22 +62,13 @@ float4 PS_Main(VS_OUT input) : SV_Target
         float3x3 matTBN = { input.viewTangent, input.viewBinormal, input.viewNormal };
         viewNormal = normalize(mul(tangentSpaceNormal, matTBN));
     }
-        
-    LightColor totalColor = (LightColor) 0.f;
+    
 
-    for (int i = 0; i < g_lightCount; ++i)
-    {
-        LightColor color = CalculateLightColor(i, viewNormal, input.viewPos);
-        totalColor.diffuse += color.diffuse;
-        totalColor.ambient += color.ambient;
-        totalColor.specular += color.specular;
-    }
-
-    color.xyz = (totalColor.diffuse.xyz * color.xyz)
-        + totalColor.ambient.xyz * color.xyz
-        + totalColor.specular.xyz;
-
-    return color;
+    output.position = float4(input.viewPos, 1.f);
+    output.normal = float4(viewNormal, 1.f);
+    output.color = color;
+    
+    return output;
 }
 
 #endif
