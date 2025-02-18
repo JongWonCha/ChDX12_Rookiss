@@ -41,12 +41,12 @@ void RenderTargetGroup::Create(RENDER_TARGET_GROUP_TYPE groupType, vector<Render
 void RenderTargetGroup::OMSetRenderTargets(uint32 count, uint32 offset)
 {
 	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle = CD3DX12_CPU_DESCRIPTOR_HANDLE(SINGLEDESCRIPTORALLOCATOR->GetRTVDescriptorHeapStart(), offset * _rtvHeapSize);
-	CMD_LIST->OMSetRenderTargets(count, &rtvHandle, FALSE/*1°³¸¸ »ç¿ë*/, &_dsvHeapBegin);
+	CMD_LIST->OMSetRenderTargets(count, &rtvHandle, FALSE/*1°³¸¸ »ç¿ë*/, &SINGLEDESCRIPTORALLOCATOR->GetDSVDescriptorHeapStart());
 }
 
 void RenderTargetGroup::OMSetRenderTargets()
 {
-	CMD_LIST->OMSetRenderTargets(_rtCount, &(SINGLEDESCRIPTORALLOCATOR->GetRTVDescriptorHeapStart()), FALSE/*´ÙÁß ·»´õ Å¸°Ù*/, &_dsvHeapBegin);
+	CMD_LIST->OMSetRenderTargets(_rtCount, &(SINGLEDESCRIPTORALLOCATOR->GetRTVDescriptorHeapStart()), FALSE/*´ÙÁß ·»´õ Å¸°Ù*/, &SINGLEDESCRIPTORALLOCATOR->GetDSVDescriptorHeapStart());
 }
 
 void RenderTargetGroup::ClearRenderTargetView(uint32 index)

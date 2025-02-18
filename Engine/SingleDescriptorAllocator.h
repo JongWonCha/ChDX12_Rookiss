@@ -20,6 +20,8 @@ class SingleDescriptorAllocator
 	IndexCreator					_indexCreatorForRTV;
 	IndexCreator					_indexCreatorForDSV;
 
+
+
 	void Cleanup();
 
 public:

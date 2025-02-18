@@ -33,7 +33,7 @@ void Shader::Init(const wstring& path, ShaderInfo info)
 
 	//depth stencil
 	_pipelineDesc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
-	_pipelineDesc.DSVFormat = GEngine->GetDepthStencilBuffer()->GetDSVFormat();
+	_pipelineDesc.DSVFormat = DXGI_FORMAT_D32_FLOAT;
 
 	_pipelineDesc.SampleMask = UINT_MAX;
 	_pipelineDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;

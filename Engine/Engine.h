@@ -32,7 +32,7 @@ public:
 	shared_ptr<ConstantBuffer> GetCBByType(CONSTANT_BUFFER_TYPE type) { return _constantBuffers[static_cast<uint8>(type)]; }
 	shared_ptr<DescriptorPool> GetDescriptorPool() { return _descriptorPool; }
 	shared_ptr<SingleDescriptorAllocator> GetSingleDescriptorAllocator() { return _singleDescriptorAllocator; }
-	shared_ptr<DepthStencilBuffer> GetDepthStencilBuffer() { return _depthStencilBuffer; }
+	//shared_ptr<DepthStencilBuffer> GetDepthStencilBuffer() { return _depthStencilBuffer; }
 	const WindowInfo& GetWindow() const { return _window; }
 
 	shared_ptr<RenderTargetGroup> GetRTGroup(RENDER_TARGET_GROUP_TYPE type) { return _rtGroups[static_cast<uint8>(type)]; }
@@ -59,7 +59,7 @@ private:
 	vector<shared_ptr<ConstantBuffer>>		_constantBuffers;
 	shared_ptr<DescriptorPool>				_descriptorPool;
 	shared_ptr<SingleDescriptorAllocator>	_singleDescriptorAllocator;
-	shared_ptr<DepthStencilBuffer>			_depthStencilBuffer;
+	//shared_ptr<DepthStencilBuffer>			_depthStencilBuffer;
 
 	array<shared_ptr<RenderTargetGroup>, RENDER_TARGET_GROUP_COUNT> _rtGroups;
 };

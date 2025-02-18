@@ -20,6 +20,9 @@ public:
 	bool Add(const wstring& key, shared_ptr<T> object);
 
 	template<typename T>
+	bool Remove(const wstring& key);
+
+	template<typename T>
 	shared_ptr<T> Get(const wstring& Key);
 
 	template<typename T>
@@ -75,6 +78,22 @@ bool Resources::Add(const wstring& key, shared_ptr<T> object)
 	keyObjMap[key] = object;
 
 	return true;
+}
+
+template<typename T>
+inline bool Resources::Remove(const wstring& key)
+{
+	OBJECT_TYPE objectType = GetObjectType<T>();
+	KeyObjMap& keyObjMap = _resources[static_cast<uint8>(objectType)];
+
+	auto findIt = keyObjMap.find(key);
+	if (findIt != keyObjMap.end())
+	{
+		keyObjMap.erase(findIt);
+		return true;
+	}
+
+	return false;
 }
 
 template<typename T>

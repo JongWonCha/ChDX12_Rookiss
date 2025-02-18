@@ -30,7 +30,7 @@ void Engine::Init(const WindowInfo& window)
 	_constantBuffers.emplace_back(make_shared<ConstantBuffer>()); // MaterialParams
 	//_constantBuffers = make_shared<ConstantBuffer>();
 	_singleDescriptorAllocator = make_shared<SingleDescriptorAllocator>();
-	_depthStencilBuffer = make_shared<DepthStencilBuffer>();
+	//_depthStencilBuffer = make_shared<DepthStencilBuffer>();
 
 	_device->Init();
 	_cmdQueue->Init(_device->GetDevice(), _swapChain);
@@ -41,7 +41,7 @@ void Engine::Init(const WindowInfo& window)
 	_constantBuffers[1]->Init(sizeof(Constant_TransformParams), 256);
 	_constantBuffers[2]->Init(sizeof(Constant_MaterialParams), 256);
 	_singleDescriptorAllocator->Init(4096, 10, 1, D3D12_DESCRIPTOR_HEAP_FLAG_NONE);
-	_depthStencilBuffer->Init(window);
+	//_depthStencilBuffer->Init(window);
 
 	GET_SINGLE(Input)->Init(window.hwnd);
 	GET_SINGLE(Timer)->Init();
@@ -101,12 +101,13 @@ void Engine::ResizeWindow(int32 width, int32 height)
 
 	for (int32 i = 0; i < SWAP_CHAIN_BUFFER_COUNT; ++i)
 	{
-		//_swapChain->GetRTVBuffer(i).Reset();
 		_rtGroups[static_cast<uint8>(RENDER_TARGET_GROUP_TYPE::SWAP_CHAIN)]->GetRTTexture(i)->GetTextureHandle()->pTexResource.Reset();
 	}
 	
-	//_rtGroups[static_cast<uint8>(RENDER_TARGET_GROUP_TYPE::DEPTH_STENCIL)]->GetRTTexture(0)->GetTextureHandle()->pTexResource.Reset();
-	_depthStencilBuffer->GetDSVBuffer().Reset();
+	_rtGroups[static_cast<uint8>(RENDER_TARGET_GROUP_TYPE::DEPTH_STENCIL)]->GetRTTexture(0)->GetTextureHandle()->pTexResource.Reset();
+	//_depthStencilBuffer->GetDSVBuffer().Reset();
+
+	GET_SINGLE(Resources)->Remove<Texture>(L"DepthStencil");
 
 	hr = _swapChain->GetSwapChain()->ResizeBuffers(
 		SWAP_CHAIN_BUFFER_COUNT,
@@ -144,7 +145,14 @@ void Engine::ResizeWindow(int32 width, int32 height)
 
 	_rtGroups[static_cast<uint8>(RENDER_TARGET_GROUP_TYPE::DEPTH_STENCIL)]->Create(RENDER_TARGET_GROUP_TYPE::DEPTH_STENCIL, dsVec);*/
 
-	_depthStencilBuffer->Init(_window);
+	//_depthStencilBuffer->Init(_window);
+
+	_rtGroups[static_cast<uint8>(RENDER_TARGET_GROUP_TYPE::DEPTH_STENCIL)]->ClearRTVector();
+	vector<RenderTarget>	dsVec(1);
+	dsVec[0].target = GET_SINGLE(Resources)->CreateTexture(L"DepthStencil", DXGI_FORMAT_D32_FLOAT, _window.width, _window.height,
+		CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT), D3D12_HEAP_FLAG_NONE, D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL);
+
+	_rtGroups[static_cast<uint8>(RENDER_TARGET_GROUP_TYPE::DEPTH_STENCIL)]->Create(RENDER_TARGET_GROUP_TYPE::DEPTH_STENCIL, dsVec);
 
 	_scissorRect = CD3DX12_RECT(0, 0, width, height);
 	_viewport = { 0, 0, static_cast<FLOAT>(width), static_cast<FLOAT>(height), 0.0f, 1.0f };
@@ -152,16 +160,13 @@ void Engine::ResizeWindow(int32 width, int32 height)
 
 void Engine::CreateRenderTargetGroups()
 {
-	// DepthStencilBuffer
-	//vector<RenderTarget>	dsVec(1);
-	//dsVec[0].target = GET_SINGLE(Resources)->CreateTexture(L"DepthStencil", DXGI_FORMAT_D32_FLOAT, _window.width, _window.height,
-	//	CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT), D3D12_HEAP_FLAG_NONE, D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL);
-	//
-	///*shared_ptr<Texture> dsTexture = GET_SINGLE(Resources)->CreateTexture(L"DepthStencil", DXGI_FORMAT_D32_FLOAT, _window.width, _window.height,
-	//	CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT), D3D12_HEAP_FLAG_NONE, D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL);*/
+	//DepthStencilBuffer
+	vector<RenderTarget>	dsVec(1);
+	dsVec[0].target = GET_SINGLE(Resources)->CreateTexture(L"DepthStencil", DXGI_FORMAT_D32_FLOAT, _window.width, _window.height,
+		CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT), D3D12_HEAP_FLAG_NONE, D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL);
 
-	//_rtGroups[static_cast<uint8>(RENDER_TARGET_GROUP_TYPE::DEPTH_STENCIL)] = make_shared<RenderTargetGroup>();
-	//_rtGroups[static_cast<uint8>(RENDER_TARGET_GROUP_TYPE::DEPTH_STENCIL)]->Create(RENDER_TARGET_GROUP_TYPE::DEPTH_STENCIL, dsVec);
+	_rtGroups[static_cast<uint8>(RENDER_TARGET_GROUP_TYPE::DEPTH_STENCIL)] = make_shared<RenderTargetGroup>();
+	_rtGroups[static_cast<uint8>(RENDER_TARGET_GROUP_TYPE::DEPTH_STENCIL)]->Create(RENDER_TARGET_GROUP_TYPE::DEPTH_STENCIL, dsVec);
 	
 
 	// Swap Chain Group

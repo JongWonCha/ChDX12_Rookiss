@@ -33,6 +33,7 @@ public:
 	void ClearRenderTargetView();
 
 	shared_ptr<Texture>& GetRTTexture(uint32 index) { return _rtVec[index].target; }
+	void ClearRTVector() { _rtVec.clear(); }
 	shared_ptr<Texture>& GetDSTexture() { return _dsTexture; }
 
 private:
