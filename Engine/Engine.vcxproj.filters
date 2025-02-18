@@ -69,9 +69,6 @@
     <ClInclude Include="SingleDescriptorAllocator.h">
       <Filter>Engine</Filter>
     </ClInclude>
-    <ClInclude Include="DepthStencilBuffer.h">
-      <Filter>Engine</Filter>
-    </ClInclude>
     <ClInclude Include="Material.h">
       <Filter>Object\Resource</Filter>
     </ClInclude>
@@ -165,9 +162,6 @@
       <Filter>Utils</Filter>
     </ClCompile>
     <ClCompile Include="SingleDescriptorAllocator.cpp">
-      <Filter>Engine</Filter>
-    </ClCompile>
-    <ClCompile Include="DepthStencilBuffer.cpp">
       <Filter>Engine</Filter>
     </ClCompile>
     <ClCompile Include="Material.cpp">

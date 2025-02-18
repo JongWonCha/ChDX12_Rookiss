@@ -174,7 +174,6 @@
     <ClInclude Include="CommandQueue.h" />
     <ClInclude Include="Component.h" />
     <ClInclude Include="ConstantBuffer.h" />
-    <ClInclude Include="DepthStencilBuffer.h" />
     <ClInclude Include="DescriptorPool.h" />
     <ClInclude Include="Device.h" />
     <ClInclude Include="Engine.h" />
@@ -208,7 +207,6 @@
     <ClCompile Include="CommandQueue.cpp" />
     <ClCompile Include="Component.cpp" />
     <ClCompile Include="ConstantBuffer.cpp" />
-    <ClCompile Include="DepthStencilBuffer.cpp" />
     <ClCompile Include="DescriptorPool.cpp" />
     <ClCompile Include="Device.cpp" />
     <ClCompile Include="Engine.cpp" />
