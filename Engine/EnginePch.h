@@ -91,7 +91,9 @@ struct Vertex
 struct TEXTURE_HANDLE
 {
 	ComPtr<ID3D12Resource> pTexResource = nullptr;
-	D3D12_CPU_DESCRIPTOR_HANDLE descriptor = {};
+	D3D12_CPU_DESCRIPTOR_HANDLE srvDesc = {};
+	D3D12_CPU_DESCRIPTOR_HANDLE rtvDesc = {};
+	D3D12_CPU_DESCRIPTOR_HANDLE dsvDesc = {};
 };
 
 class Engine;

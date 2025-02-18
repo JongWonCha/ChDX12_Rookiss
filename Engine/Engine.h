@@ -35,6 +35,8 @@ public:
 	shared_ptr<DepthStencilBuffer> GetDepthStencilBuffer() { return _depthStencilBuffer; }
 	const WindowInfo& GetWindow() const { return _window; }
 
+	shared_ptr<RenderTargetGroup> GetRTGroup(RENDER_TARGET_GROUP_TYPE type) { return _rtGroups[static_cast<uint8>(type)]; }
+
 
 	void RenderBegin();
 	void Render();

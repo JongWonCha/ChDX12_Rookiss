@@ -50,8 +50,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_CLIENT));
 
     MSG msg;
-    GWindowInfo.width = 600;
-    GWindowInfo.height = 400;
+    GWindowInfo.width = 1200;
+    GWindowInfo.height = 800;
     GWindowInfo.windowed = true;
 
     

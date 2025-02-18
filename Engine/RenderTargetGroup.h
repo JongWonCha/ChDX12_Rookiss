@@ -5,6 +5,7 @@ enum class RENDER_TARGET_GROUP_TYPE : uint8
 {
 	SWAP_CHAIN,	// back buffer, front buffer
 	G_BUFFER,	// position, normal, color
+	DEPTH_STENCIL,	// depth, stencil
 	END,
 };
 
@@ -31,8 +32,8 @@ public:
 	void ClearRenderTargetView(uint32 index);
 	void ClearRenderTargetView();
 
-	shared_ptr<Texture> GetRTTexture(uint32 index) { return _rtVec[index].target; }
-	shared_ptr<Texture> GetDSTexture() { return _dsTexture; }
+	shared_ptr<Texture>& GetRTTexture(uint32 index) { return _rtVec[index].target; }
+	shared_ptr<Texture>& GetDSTexture() { return _dsTexture; }
 
 private:
 	RENDER_TARGET_GROUP_TYPE		_groupType;

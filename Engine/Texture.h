@@ -29,7 +29,7 @@ public:
 
 	void CreateTextureResource(const wstring& path, const string& texId);
 	void CreateFromResource(ComPtr<ID3D12Resource> tex2D);
-	void CreateView(ComPtr<ID3D12Resource> texResource, ScratchImage* image, const string& texId);
+	void CreateView(ComPtr<ID3D12Resource> texResource, ScratchImage* image);
 	shared_ptr<TEXTURE_HANDLE> GetTextureHandle();
 
 private:

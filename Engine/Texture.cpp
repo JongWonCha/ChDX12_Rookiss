@@ -19,7 +19,15 @@ Texture::~Texture()
 
 	}
 	stringTexMap.clear();*/
-	SINGLEDESCRIPTORALLOCATOR->FreeDescriptorHandleForSRVUAV(_textureHandle->descriptor);
+	if(_textureHandle->srvDesc.ptr != 0)
+		SINGLEDESCRIPTORALLOCATOR->FreeDescriptorHandleForSRVUAV(_textureHandle->srvDesc);
+
+	if (_textureHandle->rtvDesc.ptr != 0)
+		SINGLEDESCRIPTORALLOCATOR->FreeDescriptorHandleForRTV(_textureHandle->rtvDesc);
+
+	if (_textureHandle->dsvDesc.ptr != 0)
+		SINGLEDESCRIPTORALLOCATOR->FreeDescriptorHandleForDSV(_textureHandle->dsvDesc);
+
 	_textureHandle = nullptr;
 
 }
@@ -30,7 +38,7 @@ void Texture::Init(const wstring& path, const string& texId)
 	//{
 	//	return;
 	//}
-	CreateTextureResource(path, texId);
+	//CreateTextureResource(path, texId);
 }
 
 void Texture::Load(const wstring& path)
@@ -97,7 +105,7 @@ void Texture::Load(const wstring& path)
 
 	GEngine->GetCmdQueue()->FlushResourceCommandQueue();
 
-	CreateView(texResource, &image, "default");
+	CreateView(texResource, &image);
 }
 
 void Texture::Create(DXGI_FORMAT format, uint32 width, uint32 height,
@@ -138,84 +146,83 @@ void Texture::Create(DXGI_FORMAT format, uint32 width, uint32 height,
 	CreateFromResource(texResource);
 }
 
-void Texture::CreateTextureResource(const wstring& path, const string& texId)
-{
-	ComPtr<ID3D12Resource> textureUploadHeap;
-	ComPtr<ID3D12Resource> texResource;
-	ScratchImage image;
-	wstring ext = fs::path(path).extension();
-
-	// 확장자에 따른 다른 메소드 수행
-	if (ext == L".dds" || ext == L".DDS")
-	{
-		::LoadFromDDSFile(path.c_str(), DDS_FLAGS_NONE, nullptr, image);
-	}
-	else if (ext == L".tga" || ext == L".TGA")
-	{
-		::LoadFromTGAFile(path.c_str(), nullptr, image);
-	}
-	else // png, jpg, jpeg, bmp
-	{
-		::LoadFromWICFile(path.c_str(), WIC_FLAGS_NONE, nullptr, image);
-	}
-
-	HRESULT hr = CreateTexture(DEVICE.Get(), image.GetMetadata(), &texResource);
-
-	if (FAILED(hr))
-		assert(nullptr);
-
-	vector<D3D12_SUBRESOURCE_DATA> subResources;
-
-	hr = DirectX::PrepareUpload(DEVICE.Get(),
-		image.GetImages(),
-		image.GetImageCount(),
-		image.GetMetadata(),
-		subResources);
-
-
-	const uint64 bufferSize = ::GetRequiredIntermediateSize(texResource.Get(), 0, static_cast<uint32>(subResources.size()));
-
-	D3D12_HEAP_PROPERTIES heapProp = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
-	D3D12_RESOURCE_DESC desc = CD3DX12_RESOURCE_DESC::Buffer(bufferSize);
-
-	hr = DEVICE->CreateCommittedResource(
-		&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD),
-		D3D12_HEAP_FLAG_NONE,
-		&CD3DX12_RESOURCE_DESC::Buffer(bufferSize),
-		D3D12_RESOURCE_STATE_GENERIC_READ,
-		nullptr,
-		IID_PPV_ARGS(textureUploadHeap.GetAddressOf())
-	);
-
-	if (FAILED(hr))
-		assert(nullptr);
-
-	UpdateSubresources(RESOURCE_CMD_LIST.Get(),
-		texResource.Get(),
-		textureUploadHeap.Get(),
-		0, 0,
-		static_cast<unsigned int>(subResources.size()),
-		subResources.data());
-
-	GEngine->GetCmdQueue()->FlushResourceCommandQueue();
-
-	CreateView(texResource, &image, texId);
-}
+//void Texture::CreateTextureResource(const wstring& path, const string& texId)
+//{
+//	ComPtr<ID3D12Resource> textureUploadHeap;
+//	ComPtr<ID3D12Resource> texResource;
+//	ScratchImage image;
+//	wstring ext = fs::path(path).extension();
+//
+//	// 확장자에 따른 다른 메소드 수행
+//	if (ext == L".dds" || ext == L".DDS")
+//	{
+//		::LoadFromDDSFile(path.c_str(), DDS_FLAGS_NONE, nullptr, image);
+//	}
+//	else if (ext == L".tga" || ext == L".TGA")
+//	{
+//		::LoadFromTGAFile(path.c_str(), nullptr, image);
+//	}
+//	else // png, jpg, jpeg, bmp
+//	{
+//		::LoadFromWICFile(path.c_str(), WIC_FLAGS_NONE, nullptr, image);
+//	}
+//
+//	HRESULT hr = CreateTexture(DEVICE.Get(), image.GetMetadata(), &texResource);
+//
+//	if (FAILED(hr))
+//		assert(nullptr);
+//
+//	vector<D3D12_SUBRESOURCE_DATA> subResources;
+//
+//	hr = DirectX::PrepareUpload(DEVICE.Get(),
+//		image.GetImages(),
+//		image.GetImageCount(),
+//		image.GetMetadata(),
+//		subResources);
+//
+//
+//	const uint64 bufferSize = ::GetRequiredIntermediateSize(texResource.Get(), 0, static_cast<uint32>(subResources.size()));
+//
+//	D3D12_HEAP_PROPERTIES heapProp = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
+//	D3D12_RESOURCE_DESC desc = CD3DX12_RESOURCE_DESC::Buffer(bufferSize);
+//
+//	hr = DEVICE->CreateCommittedResource(
+//		&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD),
+//		D3D12_HEAP_FLAG_NONE,
+//		&CD3DX12_RESOURCE_DESC::Buffer(bufferSize),
+//		D3D12_RESOURCE_STATE_GENERIC_READ,
+//		nullptr,
+//		IID_PPV_ARGS(textureUploadHeap.GetAddressOf())
+//	);
+//
+//	if (FAILED(hr))
+//		assert(nullptr);
+//
+//	UpdateSubresources(RESOURCE_CMD_LIST.Get(),
+//		texResource.Get(),
+//		textureUploadHeap.Get(),
+//		0, 0,
+//		static_cast<unsigned int>(subResources.size()),
+//		subResources.data());
+//
+//	GEngine->GetCmdQueue()->FlushResourceCommandQueue();
+//
+//	CreateView(texResource, &image, texId);
+//}
 
 void Texture::CreateFromResource(ComPtr<ID3D12Resource> tex2D)
 {
 	D3D12_CPU_DESCRIPTOR_HANDLE descriptorHandle = {};
 	D3D12_RESOURCE_DESC desc = tex2D->GetDesc();
+	_textureHandle = make_shared<TEXTURE_HANDLE>();
+	_textureHandle->pTexResource = tex2D.Get();
 
 	if (desc.Flags & D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL)
 	{
 		if (SINGLEDESCRIPTORALLOCATOR->AllocDescriptorHandleForDSV(&descriptorHandle))
 		{
 			DEVICE->CreateDepthStencilView(tex2D.Get(), nullptr, descriptorHandle);
-
-			_textureHandle = make_shared<TEXTURE_HANDLE>();
-			_textureHandle->pTexResource = tex2D.Get();
-			_textureHandle->descriptor = descriptorHandle;
+			_textureHandle->dsvDesc = descriptorHandle;
 			_textureType = TEXTURE_TYPE::DSV;
 		}
 	}
@@ -225,20 +232,27 @@ void Texture::CreateFromResource(ComPtr<ID3D12Resource> tex2D)
 		if (SINGLEDESCRIPTORALLOCATOR->AllocDescriptorHandleForRTV(&descriptorHandle))
 		{
 			DEVICE->CreateRenderTargetView(tex2D.Get(), nullptr, descriptorHandle);
-			_textureHandle = make_shared<TEXTURE_HANDLE>();
-			_textureHandle->pTexResource = tex2D.Get();
-			_textureHandle->descriptor = descriptorHandle;
+			_textureHandle->rtvDesc = descriptorHandle;
 			_textureType = TEXTURE_TYPE::RTV;
 		}
+
+
+		D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+		srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+		srvDesc.Format = desc.Format;
+		srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+		srvDesc.Texture2D.MipLevels = 1;
+		if (SINGLEDESCRIPTORALLOCATOR->AllocDescriptorHandleForSRVUAV(&descriptorHandle))
+		{
+			DEVICE->CreateShaderResourceView(tex2D.Get(), &srvDesc, descriptorHandle);
+			_textureHandle->srvDesc = descriptorHandle;
+			_textureType == TEXTURE_TYPE::RTV ? _textureType = TEXTURE_TYPE::RTV : _textureType = TEXTURE_TYPE::SRV_UAV;
+		}
 	}
-	else
-	{
-		__debugbreak();
-		// TODO : 셰이더 리소스 뷰 생성
-	}
+	
 }
 
-void Texture::CreateView(ComPtr<ID3D12Resource> texResource, ScratchImage* image, const string& texId)
+void Texture::CreateView(ComPtr<ID3D12Resource> texResource, ScratchImage* image)
 {
 	D3D12_CPU_DESCRIPTOR_HANDLE srv = {};
 
@@ -254,7 +268,8 @@ void Texture::CreateView(ComPtr<ID3D12Resource> texResource, ScratchImage* image
 
 		_textureHandle = make_shared<TEXTURE_HANDLE>();
 		_textureHandle->pTexResource = texResource.Get();
-		_textureHandle->descriptor = srv;
+		_textureHandle->srvDesc = srv;
+		_textureType = TEXTURE_TYPE::SRV_UAV;
 	}
 }
 

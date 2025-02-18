@@ -30,6 +30,7 @@ BOOL SingleDescriptorAllocator::Init(DWORD srvMaxCount, DWORD rtvMaxCount, DWORD
 	rtvHeapDesc.NumDescriptors = rtvMaxCount;
 	rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
 	rtvHeapDesc.Flags = flags;
+	rtvHeapDesc.NodeMask = 0;
 
 	if (FAILED(DEVICE->CreateDescriptorHeap(&rtvHeapDesc, IID_PPV_ARGS(&_RTVDescHeap))))
 	{

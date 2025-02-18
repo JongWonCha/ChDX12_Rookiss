@@ -53,18 +53,24 @@ void CommandQueue::RenderBegin(const D3D12_VIEWPORT* vp, const D3D12_RECT* rect)
 	_cmdList->RSSetScissorRects(1, rect);
 
 	//_cmdList->SetGraphicsRootSignature(ROOT_SIGNATURE.Get());
+	int8 backIndex = _swapChain->GetBackBufferIndex();
+	shared_ptr<Texture> backBuffer = GEngine->GetRTGroup(RENDER_TARGET_GROUP_TYPE::SWAP_CHAIN)->GetRTTexture(backIndex);
 
-	_cmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(
-		_swapChain->GetCurrentBackRTVBuffer().Get(),
+	D3D12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
+		backBuffer->GetTextureHandle()->pTexResource.Get(),
 		D3D12_RESOURCE_STATE_PRESENT,
 		D3D12_RESOURCE_STATE_RENDER_TARGET
-	));
+	);
 
-	D3D12_CPU_DESCRIPTOR_HANDLE backBufferView = _swapChain->GetBackRTV();
+	_cmdList->ResourceBarrier(1, &barrier);
+
+
+	D3D12_CPU_DESCRIPTOR_HANDLE backBufferView = backBuffer->GetTextureHandle()->rtvDesc;
 	const float BackColor[] = { 0.f, 0.f, 0.f, 1.0f };
 	_cmdList->ClearRenderTargetView(backBufferView, BackColor, 0, nullptr);
 	
 	D3D12_CPU_DESCRIPTOR_HANDLE depthStencilView = GEngine->GetDepthStencilBuffer()->GetDSVCpuHandle();
+	//D3D12_CPU_DESCRIPTOR_HANDLE depthStencilView = GEngine->GetRTGroup(RENDER_TARGET_GROUP_TYPE::DEPTH_STENCIL)->GetRTTexture(0)->GetTextureHandle()->dsvDesc;
 	_cmdList->OMSetRenderTargets(1, &backBufferView, FALSE, &depthStencilView);
 	_cmdList->ClearDepthStencilView(depthStencilView, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 
@@ -75,8 +81,11 @@ void CommandQueue::RenderBegin(const D3D12_VIEWPORT* vp, const D3D12_RECT* rect)
 
 void CommandQueue::RenderEnd()
 {
+	int8 backIndex = _swapChain->GetBackBufferIndex();
+	shared_ptr<Texture> backBuffer = GEngine->GetRTGroup(RENDER_TARGET_GROUP_TYPE::SWAP_CHAIN)->GetRTTexture(backIndex);
+
 	D3D12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
-		_swapChain->GetCurrentBackRTVBuffer().Get(),
+		backBuffer->GetTextureHandle()->pTexResource.Get(),
 		D3D12_RESOURCE_STATE_RENDER_TARGET,
 		D3D12_RESOURCE_STATE_PRESENT
 	);

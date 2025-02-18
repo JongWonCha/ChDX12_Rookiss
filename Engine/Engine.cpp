@@ -47,7 +47,7 @@ void Engine::Init(const WindowInfo& window)
 	GET_SINGLE(Timer)->Init();
 	GET_SINGLE(Resources)->Init();
 
-	//CreateRenderTargetGroups();
+	CreateRenderTargetGroups();
 
 	ResizeWindow(window.width, window.height);
 }
@@ -101,8 +101,11 @@ void Engine::ResizeWindow(int32 width, int32 height)
 
 	for (int32 i = 0; i < SWAP_CHAIN_BUFFER_COUNT; ++i)
 	{
-		_swapChain->GetRTVBuffer(i).Reset();
+		//_swapChain->GetRTVBuffer(i).Reset();
+		_rtGroups[static_cast<uint8>(RENDER_TARGET_GROUP_TYPE::SWAP_CHAIN)]->GetRTTexture(i)->GetTextureHandle()->pTexResource.Reset();
 	}
+	
+	//_rtGroups[static_cast<uint8>(RENDER_TARGET_GROUP_TYPE::DEPTH_STENCIL)]->GetRTTexture(0)->GetTextureHandle()->pTexResource.Reset();
 	_depthStencilBuffer->GetDSVBuffer().Reset();
 
 	hr = _swapChain->GetSwapChain()->ResizeBuffers(
@@ -116,13 +119,14 @@ void Engine::ResizeWindow(int32 width, int32 height)
 		__debugbreak();
 
 	_swapChain->SetBackBufferIndex(0);
-	CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHeapHandle(_swapChain->GetRTVHeap()->GetCPUDescriptorHandleForHeapStart());
+	CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHeapHandle(SINGLEDESCRIPTORALLOCATOR->GetRTVDescriptorHeapStart());
+	//CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHeapHandle(_swapChain->GetRTVHeap()->GetCPUDescriptorHandleForHeapStart());
 
 	for (UINT i = 0; i < SWAP_CHAIN_BUFFER_COUNT; ++i)
 	{
-		_swapChain->GetSwapChain()->GetBuffer(i, IID_PPV_ARGS(&_swapChain->GetRTVBuffer(i)));
-		_device->GetDevice()->CreateRenderTargetView(_swapChain->GetRTVBuffer(i).Get(), nullptr, rtvHeapHandle);
-		rtvHeapHandle.Offset(1, _swapChain->GetRTVElementSize());
+		_swapChain->GetSwapChain()->GetBuffer(i, IID_PPV_ARGS(&(_rtGroups[static_cast<uint8>(RENDER_TARGET_GROUP_TYPE::SWAP_CHAIN)]->GetRTTexture(i)->GetTextureHandle()->pTexResource)));
+		_device->GetDevice()->CreateRenderTargetView(_rtGroups[static_cast<uint8>(RENDER_TARGET_GROUP_TYPE::SWAP_CHAIN)]->GetRTTexture(i)->GetTextureHandle()->pTexResource.Get(), nullptr, rtvHeapHandle);
+		rtvHeapHandle.Offset(1, SINGLEDESCRIPTORALLOCATOR->GetRTVDescriptorSize());
 	}
 	
 	/*_cmdQueue->GetCmdList()->Close();
@@ -134,6 +138,12 @@ void Engine::ResizeWindow(int32 width, int32 height)
 	_window.width = width;
 	_window.height = height;
 
+	/*vector<RenderTarget>	dsVec(1);
+	dsVec[0].target = GET_SINGLE(Resources)->CreateTexture(L"DepthStencil", DXGI_FORMAT_D32_FLOAT, width, height,
+		CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT), D3D12_HEAP_FLAG_NONE, D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL);
+
+	_rtGroups[static_cast<uint8>(RENDER_TARGET_GROUP_TYPE::DEPTH_STENCIL)]->Create(RENDER_TARGET_GROUP_TYPE::DEPTH_STENCIL, dsVec);*/
+
 	_depthStencilBuffer->Init(_window);
 
 	_scissorRect = CD3DX12_RECT(0, 0, width, height);
@@ -143,12 +153,19 @@ void Engine::ResizeWindow(int32 width, int32 height)
 void Engine::CreateRenderTargetGroups()
 {
 	// DepthStencilBuffer
+	//vector<RenderTarget>	dsVec(1);
+	//dsVec[0].target = GET_SINGLE(Resources)->CreateTexture(L"DepthStencil", DXGI_FORMAT_D32_FLOAT, _window.width, _window.height,
+	//	CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT), D3D12_HEAP_FLAG_NONE, D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL);
+	//
+	///*shared_ptr<Texture> dsTexture = GET_SINGLE(Resources)->CreateTexture(L"DepthStencil", DXGI_FORMAT_D32_FLOAT, _window.width, _window.height,
+	//	CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT), D3D12_HEAP_FLAG_NONE, D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL);*/
 
-	shared_ptr<Texture> dsTexture = GET_SINGLE(Resources)->CreateTexture(L"DepthStencil", DXGI_FORMAT_D32_FLOAT, _window.width, _window.height,
-		CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT), D3D12_HEAP_FLAG_NONE, D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL);
+	//_rtGroups[static_cast<uint8>(RENDER_TARGET_GROUP_TYPE::DEPTH_STENCIL)] = make_shared<RenderTargetGroup>();
+	//_rtGroups[static_cast<uint8>(RENDER_TARGET_GROUP_TYPE::DEPTH_STENCIL)]->Create(RENDER_TARGET_GROUP_TYPE::DEPTH_STENCIL, dsVec);
 	
 
 	// Swap Chain Group
+	// SingleDescriptorAllocator에 가장 먼저 등록되어야 함(RTV 부분)
 	{
 		vector<RenderTarget> rtVec(SWAP_CHAIN_BUFFER_COUNT);
 

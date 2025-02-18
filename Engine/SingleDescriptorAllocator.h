@@ -49,6 +49,10 @@ public:
 	D3D12_CPU_DESCRIPTOR_HANDLE GetRTVDescriptorHeapStart() { return _RTVDescHeap->GetCPUDescriptorHandleForHeapStart(); }
 	D3D12_CPU_DESCRIPTOR_HANDLE GetDSVDescriptorHeapStart() { return _DSVDescHeap->GetCPUDescriptorHandleForHeapStart(); }
 
+	UINT GetSRVUAVDescriptorSize() const { return _SRVUAVDescSize; }
+	UINT GetRTVDescriptorSize() const { return _RTVDescSize; }
+	UINT GetDSVDescriptorSize() const { return _DSVDescSize; }
+
 	SingleDescriptorAllocator();
 	~SingleDescriptorAllocator();
 };
