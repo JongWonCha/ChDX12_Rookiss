@@ -249,6 +249,16 @@ void Resources::CreateDefaultShader()
 	{
 		ShaderInfo info =
 		{
+			SHADER_TYPE::DEFERRED,
+		};
+		shared_ptr<Shader> shader = make_shared<Shader>();
+		shader->Init(L"..\\Resources\\Shader\\deferred.hlsl", info);
+		Add<Shader>(L"Default", shader);
+	}
+
+	{
+		ShaderInfo info =
+		{
 			SHADER_TYPE::FORWARD,
 		};
 

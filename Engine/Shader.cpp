@@ -36,7 +36,7 @@ void Shader::Init(const wstring& path, ShaderInfo info)
 	_pipelineDesc.DSVFormat = DXGI_FORMAT_D32_FLOAT;
 
 	_pipelineDesc.SampleMask = UINT_MAX;
-	_pipelineDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+	_pipelineDesc.PrimitiveTopologyType = _info.topologyType;
 	_pipelineDesc.NumRenderTargets = 1;
 	_pipelineDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
 	_pipelineDesc.SampleDesc.Count = 1;
@@ -44,10 +44,10 @@ void Shader::Init(const wstring& path, ShaderInfo info)
 	switch (info.shaderType)
 	{
 	case SHADER_TYPE::DEFERRED:
-		_pipelineDesc.NumRenderTargets = RENDER_TARGET_G_BUFFER_GROUP_MEMBER_COUNT;
-		_pipelineDesc.RTVFormats[0] = DXGI_FORMAT_R32G32B32A32_FLOAT;
-		_pipelineDesc.RTVFormats[1] = DXGI_FORMAT_R32G32B32A32_FLOAT;
-		_pipelineDesc.RTVFormats[2] = DXGI_FORMAT_R8G8B8A8_UNORM;
+		_pipelineDesc.NumRenderTargets = RENDER_TARGET_G_BUFFER_GROUP_MEMBER_COUNT; // position, normal, color
+		_pipelineDesc.RTVFormats[0] = DXGI_FORMAT_R32G32B32A32_FLOAT;	// position
+		_pipelineDesc.RTVFormats[1] = DXGI_FORMAT_R32G32B32A32_FLOAT;	// normal
+		_pipelineDesc.RTVFormats[2] = DXGI_FORMAT_R8G8B8A8_UNORM;		// color
 		break;
 	case SHADER_TYPE::FORWARD:
 		_pipelineDesc.NumRenderTargets = 1;
