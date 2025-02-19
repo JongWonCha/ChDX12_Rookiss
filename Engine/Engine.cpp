@@ -40,7 +40,7 @@ void Engine::Init(const WindowInfo& window)
 	_constantBuffers[0]->Init(sizeof(Constant_LightParams), 1);
 	_constantBuffers[1]->Init(sizeof(Constant_TransformParams), 256);
 	_constantBuffers[2]->Init(sizeof(Constant_MaterialParams), 256);
-	_singleDescriptorAllocator->Init(4096, 10, 1, D3D12_DESCRIPTOR_HEAP_FLAG_NONE);
+	_singleDescriptorAllocator->Init(4096, SWAP_CHAIN_BUFFER_COUNT * (1 + RENDER_TARGET_G_BUFFER_GROUP_MEMBER_COUNT), 1, D3D12_DESCRIPTOR_HEAP_FLAG_NONE);
 	//_depthStencilBuffer->Init(window);
 
 	GET_SINGLE(Input)->Init(window.hwnd);
@@ -189,14 +189,24 @@ void Engine::CreateRenderTargetGroups()
 
 	// Deffered Group
 	{
-		vector<RenderTarget> rtVec(RENDER_TARGET_G_BUFFER_GROUP_MEMBER_COUNT);
+		vector<RenderTarget> rtVec(RENDER_TARGET_G_BUFFER_GROUP_MEMBER_COUNT * SWAP_CHAIN_BUFFER_COUNT);
+		
+		for (int32 i = 0; i < SWAP_CHAIN_BUFFER_COUNT; ++i)
+		{
+			rtVec[(i * RENDER_TARGET_G_BUFFER_GROUP_MEMBER_COUNT) + 0].target = GET_SINGLE(Resources)->CreateTexture(L"PositionTarget_" + std::to_wstring(i * RENDER_TARGET_G_BUFFER_GROUP_MEMBER_COUNT + 0),
+				DXGI_FORMAT_R32G32B32A32_FLOAT, _window.width, _window.height,
+				CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT), D3D12_HEAP_FLAG_NONE, D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET);
 
-		rtVec[0].target = GET_SINGLE(Resources)->CreateTexture(L"PositionTarget", DXGI_FORMAT_R32G32B32A32_FLOAT, _window.width, _window.height,
-			CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT), D3D12_HEAP_FLAG_NONE, D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET);
-		rtVec[1].target = GET_SINGLE(Resources)->CreateTexture(L"NormalTarget", DXGI_FORMAT_R32G32B32A32_FLOAT, _window.width, _window.height,
-			CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT), D3D12_HEAP_FLAG_NONE, D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET);
-		rtVec[2].target = GET_SINGLE(Resources)->CreateTexture(L"DiffuseTarget", DXGI_FORMAT_R8G8B8A8_UNORM, _window.width, _window.height,
-			CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT), D3D12_HEAP_FLAG_NONE, D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET);
+			rtVec[(i * RENDER_TARGET_G_BUFFER_GROUP_MEMBER_COUNT) + 1].target = GET_SINGLE(Resources)->CreateTexture(L"NormalTarget_" + std::to_wstring(i * RENDER_TARGET_G_BUFFER_GROUP_MEMBER_COUNT + 1),
+				DXGI_FORMAT_R32G32B32A32_FLOAT, _window.width, _window.height,
+				CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT), D3D12_HEAP_FLAG_NONE, D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET);
+
+			rtVec[(i * RENDER_TARGET_G_BUFFER_GROUP_MEMBER_COUNT) + 2].target = GET_SINGLE(Resources)->CreateTexture(L"DiffuseTarget_" + std::to_wstring(i * RENDER_TARGET_G_BUFFER_GROUP_MEMBER_COUNT + 2),
+				DXGI_FORMAT_R8G8B8A8_UNORM, _window.width, _window.height,
+				CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT), D3D12_HEAP_FLAG_NONE, D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET);
+		}
+
+		
 
 		_rtGroups[static_cast<uint8>(RENDER_TARGET_GROUP_TYPE::G_BUFFER)] = make_shared<RenderTargetGroup>();
 		_rtGroups[static_cast<uint8>(RENDER_TARGET_GROUP_TYPE::G_BUFFER)]->Create(RENDER_TARGET_GROUP_TYPE::G_BUFFER, rtVec);

@@ -26,8 +26,8 @@ class RenderTargetGroup
 public:
 	void Create(RENDER_TARGET_GROUP_TYPE groupType, vector<RenderTarget>& rtVec);
 
-	void OMSetRenderTargets(uint32 count, uint32 offset);
-	void OMSetRenderTargets();
+	void OMSetRenderTargets(uint32 count, uint32 offset);	// for RTV
+	void OMSetRenderTargets();	// for GBuffer	
 
 	void ClearRenderTargetView(uint32 index);
 	void ClearRenderTargetView();
