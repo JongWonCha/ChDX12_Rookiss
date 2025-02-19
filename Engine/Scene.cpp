@@ -50,10 +50,12 @@ void Scene::Render()
 {
 	PushLightData();
 
-	int8 backIndex = GEngine->GetSwapChain()->GetBackBufferIndex();
+    int8 backIndex = GEngine->GetSwapChain()->GetBackBufferIndex();
+	//int8 frontIndex = backIndex ^ 1;
+    //backIndex ^= 1; // 비트 연산으로 0을 1로, 1을 0으로 변환
 	GEngine->GetRTGroup(RENDER_TARGET_GROUP_TYPE::SWAP_CHAIN)->ClearRenderTargetView(backIndex);
 
-	GEngine->GetRTGroup(RENDER_TARGET_GROUP_TYPE::G_BUFFER)->ClearRenderTargetViews(backIndex);
+	GEngine->GetRTGroup(RENDER_TARGET_GROUP_TYPE::G_BUFFER)->ClearRenderTargetViews(0);
 
 	for (auto& gameObject : _gameObjects)
 	{
@@ -64,7 +66,7 @@ void Scene::Render()
 		gameObject->GetCamera()->SortGameObject();
 
 		// Deferred OMSet
-		GEngine->GetRTGroup(RENDER_TARGET_GROUP_TYPE::G_BUFFER)->OMSetRenderTargets(backIndex);
+		GEngine->GetRTGroup(RENDER_TARGET_GROUP_TYPE::G_BUFFER)->OMSetRenderTargets(0);
 		gameObject->GetCamera()->Render_Deferred();
 
 		// TODO : Light OMSet

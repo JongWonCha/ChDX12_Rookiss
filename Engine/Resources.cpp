@@ -246,6 +246,20 @@ shared_ptr<Texture> Resources::CreateTextureFromResource(const wstring& name, Co
 
 void Resources::CreateDefaultShader()
 {
+	// Skybox
+	{
+		ShaderInfo info =
+		{
+			SHADER_TYPE::FORWARD,
+			RASTERIZER_TYPE::CULL_NONE,
+			DEPTH_STENCIL_TYPE::LESS_EQUAL
+		};
+
+		shared_ptr<Shader> shader = make_shared<Shader>();
+		shader->Init(L"..\\Resources\\Shader\\skybox.hlsl", info);
+		Add<Shader>(L"Skybox", shader);
+	}
+
 	{
 		ShaderInfo info =
 		{

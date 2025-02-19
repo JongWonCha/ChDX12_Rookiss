@@ -98,13 +98,35 @@ shared_ptr<Scene> SceneManager::LoadTestScene()
 	}
 #pragma endregion
 
+#pragma region SKYBOX
+	{
+		shared_ptr<GameObject> skybox = make_shared<GameObject>();
+		skybox->AddComponent(make_shared<Transform>());
+		shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
+		{
+			shared_ptr<Mesh> sphereMesh = GET_SINGLE(Resources)->LoadSphereMesh();
+			meshRenderer->SetMesh(sphereMesh);
+		}
+		{
+			shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"Skybox");
+			shared_ptr<Texture> texture = GET_SINGLE(Resources)->Load<Texture>(L"Sky01", L"..\\Resources\\Texture\\skySphere.jpg");
+			shared_ptr<Material> material = make_shared<Material>();
+			material->SetShader(shader);
+			material->SetTexture(0, texture);
+			meshRenderer->SetMaterial(material);
+		}
+		skybox->AddComponent(meshRenderer);
+		scene->AddGameObject(skybox);
+	}
+#pragma endregion
+
 #pragma region UI_Test
 	for(int32 i = 0; i < 3; ++i)
 	{
 		shared_ptr<GameObject> rect = make_shared<GameObject>();
 		rect->SetLayerIndex(GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI"));
 		rect->AddComponent(make_shared<Transform>());
-		rect->GetTransform()->SetLocalPosition(Vec3(-500.f + (i * 160), 250.f, 500.f));
+		rect->GetTransform()->SetLocalPosition(Vec3(-500.f + (i * 160), 300.f, 500.f));
 		rect->GetTransform()->SetLocalScale(Vec3(150.f, 100.f, 100.f));
 		shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
 		{

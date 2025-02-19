@@ -23,8 +23,9 @@ void RenderTargetGroup::OMSetRenderTargets(uint32 index)
 {
 	//int32 curr = index * RENDER_TARGET_G_BUFFER_GROUP_MEMBER_COUNT;
 
-	CD3DX12_CPU_DESCRIPTOR_HANDLE gBufferRTVHandle = CD3DX12_CPU_DESCRIPTOR_HANDLE(SINGLEDESCRIPTORALLOCATOR->GetRTVDescriptorHeapStart(), SWAP_CHAIN_BUFFER_COUNT, _rtvHeapSize);
-	gBufferRTVHandle.Offset(index * RENDER_TARGET_G_BUFFER_GROUP_MEMBER_COUNT, _rtvHeapSize);
+	//int32 curr = SWAP_CHAIN_BUFFER_COUNT + index * RENDER_TARGET_G_BUFFER_GROUP_MEMBER_COUNT;
+	CD3DX12_CPU_DESCRIPTOR_HANDLE gBufferRTVHandle = CD3DX12_CPU_DESCRIPTOR_HANDLE(SINGLEDESCRIPTORALLOCATOR->GetRTVDescriptorHeapStart(), SWAP_CHAIN_BUFFER_COUNT + index * RENDER_TARGET_G_BUFFER_GROUP_MEMBER_COUNT, _rtvHeapSize);
+	//gBufferRTVHandle.Offset(index * RENDER_TARGET_G_BUFFER_GROUP_MEMBER_COUNT, _rtvHeapSize);
 
 	CMD_LIST->OMSetRenderTargets(RENDER_TARGET_G_BUFFER_GROUP_MEMBER_COUNT, &gBufferRTVHandle, TRUE/*´ÙÁß ·»´õ Å¸°Ù*/, &SINGLEDESCRIPTORALLOCATOR->GetDSVDescriptorHeapStart());
 }
@@ -39,14 +40,13 @@ void RenderTargetGroup::ClearRenderTargetView(uint32 index)
 
 void RenderTargetGroup::ClearRenderTargetViews(uint32 index)
 {
-	float clearColor[4] = { 1.f, 1.f, 1.f, 1.f };
-	CD3DX12_CPU_DESCRIPTOR_HANDLE gBufferRTVHandle = CD3DX12_CPU_DESCRIPTOR_HANDLE(SINGLEDESCRIPTORALLOCATOR->GetRTVDescriptorHeapStart(), SWAP_CHAIN_BUFFER_COUNT * _rtvHeapSize);
-	gBufferRTVHandle.Offset(index * RENDER_TARGET_G_BUFFER_GROUP_MEMBER_COUNT, _rtvHeapSize);
-	//gBufferRTVHandle
+	
+	CD3DX12_CPU_DESCRIPTOR_HANDLE gBufferRTVHandle = CD3DX12_CPU_DESCRIPTOR_HANDLE(SINGLEDESCRIPTORALLOCATOR->GetRTVDescriptorHeapStart(), SWAP_CHAIN_BUFFER_COUNT + index * RENDER_TARGET_G_BUFFER_GROUP_MEMBER_COUNT, _rtvHeapSize);
+	
 	for (uint32 i = 0; i < RENDER_TARGET_G_BUFFER_GROUP_MEMBER_COUNT; ++i)
 	{
-		CMD_LIST->ClearRenderTargetView(gBufferRTVHandle, clearColor, 0, nullptr);
+		CMD_LIST->ClearRenderTargetView(gBufferRTVHandle, _rtVec[i].clearColor, 0, nullptr);
 		gBufferRTVHandle.Offset(1, _rtvHeapSize);
 	}
-	CMD_LIST->ClearDepthStencilView(SINGLEDESCRIPTORALLOCATOR->GetDSVDescriptorHeapStart(), D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
+	//CMD_LIST->ClearDepthStencilView(SINGLEDESCRIPTORALLOCATOR->GetDSVDescriptorHeapStart(), D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 }
