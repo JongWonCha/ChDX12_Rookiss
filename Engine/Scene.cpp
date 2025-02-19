@@ -50,11 +50,28 @@ void Scene::Render()
 {
 	PushLightData();
 
+	int8 backIndex = GEngine->GetSwapChain()->GetBackBufferIndex();
+	GEngine->GetRTGroup(RENDER_TARGET_GROUP_TYPE::SWAP_CHAIN)->ClearRenderTargetView(backIndex);
+
+	GEngine->GetRTGroup(RENDER_TARGET_GROUP_TYPE::G_BUFFER)->ClearRenderTargetViews(backIndex);
+
 	for (auto& gameObject : _gameObjects)
 	{
 		if (gameObject->GetCamera() == nullptr) continue;
 
-		gameObject->GetCamera()->Render();
+		//gameObject->GetCamera()->Render();
+
+		gameObject->GetCamera()->SortGameObject();
+
+		// Deferred OMSet
+		GEngine->GetRTGroup(RENDER_TARGET_GROUP_TYPE::G_BUFFER)->OMSetRenderTargets(backIndex);
+		gameObject->GetCamera()->Render_Deferred();
+
+		// TODO : Light OMSet
+
+		// Swapchain OMSet
+		GEngine->GetRTGroup(RENDER_TARGET_GROUP_TYPE::SWAP_CHAIN)->OMSetRenderTarget(1, backIndex);
+		gameObject->GetCamera()->Render_Forward();
 	}
 }
 

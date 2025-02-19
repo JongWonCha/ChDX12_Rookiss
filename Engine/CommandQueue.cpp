@@ -65,14 +65,13 @@ void CommandQueue::RenderBegin(const D3D12_VIEWPORT* vp, const D3D12_RECT* rect)
 	_cmdList->ResourceBarrier(1, &barrier);
 
 
-	D3D12_CPU_DESCRIPTOR_HANDLE backBufferView = backBuffer->GetTextureHandle()->rtvDesc;
+	/*D3D12_CPU_DESCRIPTOR_HANDLE backBufferView = backBuffer->GetTextureHandle()->rtvDesc;
 	const float BackColor[] = { 0.f, 0.f, 0.f, 1.0f };
 	_cmdList->ClearRenderTargetView(backBufferView, BackColor, 0, nullptr);
 	
-	//D3D12_CPU_DESCRIPTOR_HANDLE depthStencilView = GEngine->GetDepthStencilBuffer()->GetDSVCpuHandle();
 	D3D12_CPU_DESCRIPTOR_HANDLE depthStencilView = GEngine->GetRTGroup(RENDER_TARGET_GROUP_TYPE::DEPTH_STENCIL)->GetRTTexture(0)->GetTextureHandle()->dsvDesc;
 	_cmdList->OMSetRenderTargets(1, &backBufferView, FALSE, &depthStencilView);
-	_cmdList->ClearDepthStencilView(depthStencilView, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
+	_cmdList->ClearDepthStencilView(depthStencilView, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);*/
 
 	_cmdList->SetGraphicsRootSignature(ROOT_SIGNATURE.Get());
 	_cmdList->SetDescriptorHeaps(1, DESCRIPTORPOOL->GetDescriptorHeap().GetAddressOf());

@@ -262,6 +262,7 @@
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
+    <FxCompile Include="..\Resources\Shader\skybox.hlsl" />
     <FxCompile Include="..\Resources\Shader\utils.hlsl">
       <FileType>Document</FileType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>

@@ -26,11 +26,11 @@ class RenderTargetGroup
 public:
 	void Create(RENDER_TARGET_GROUP_TYPE groupType, vector<RenderTarget>& rtVec);
 
-	void OMSetRenderTargets(uint32 count, uint32 offset);	// for RTV
-	void OMSetRenderTargets();	// for GBuffer	
+	void OMSetRenderTarget(uint32 count, uint32 offset);	// for RTV
+	void OMSetRenderTargets(uint32 index);	// for GBuffer	
 
 	void ClearRenderTargetView(uint32 index);
-	void ClearRenderTargetView();
+	void ClearRenderTargetViews(uint32 index);
 
 	shared_ptr<Texture>& GetRTTexture(uint32 index) { return _rtVec[index].target; }
 	void ClearRTVector() { _rtVec.clear(); }

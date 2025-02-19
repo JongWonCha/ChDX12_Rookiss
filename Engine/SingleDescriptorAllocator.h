@@ -10,7 +10,7 @@ class SingleDescriptorAllocator
 {
 	ComPtr<ID3D12DescriptorHeap>	_SRVUAVDescHeap = nullptr;	// use for SRV, UAV
 	// ex : 스왑 체인의 갯수 : 2 일 때
-	// 0번째 RTV | 1번째 RTV | 0번째 Position G-Buffer | 0번째 Normal G-Buffer | 0번째 Color G-Buffer | 1번째 Position G-Buffer | 1번째 Normal G-Buffer | 1번째 Color G-Buffer
+	// 0번째 Frame Buffer | 1번째 Frame Buffer | 0번째 Position G-Buffer | 0번째 Normal G-Buffer | 0번째 Color G-Buffer | 1번째 Position G-Buffer | 1번째 Normal G-Buffer | 1번째 Color G-Buffer
 	ComPtr<ID3D12DescriptorHeap>	_RTVDescHeap = nullptr;		// use for RTV (FrameBuffer + GBuffer) 2 * 프레임 버퍼 + 2 * (GBuffer * 3)
 	ComPtr<ID3D12DescriptorHeap>	_DSVDescHeap = nullptr;		// use for DSV
 
@@ -22,7 +22,8 @@ class SingleDescriptorAllocator
 	IndexCreator					_indexCreatorForRTV;
 	IndexCreator					_indexCreatorForDSV;
 
-
+	uint8 _frameBufferCount = 0;
+	uint8 _gBufferCount = 0;
 
 	void Cleanup();
 

@@ -5,6 +5,7 @@
 #include "SceneManager.h"
 #include "GameObject.h"
 #include "MeshRenderer.h"
+#include "Material.h"
 #include "Engine.h"
 
 Matrix Camera::S_MatView;
@@ -31,24 +32,73 @@ void Camera::FinalUpdate()
 		_matProjection = ::XMMatrixOrthographicLH(width * _scale, height * _scale, _near, _far);
 }
 
-void Camera::Render()
+//void Camera::Render()
+//{
+//	S_MatView = _matView;
+//	S_MatProjection = _matProjection;
+//
+//	shared_ptr<Scene> scene = GET_SINGLE(SceneManager)->GetActiveScene();
+//
+//	// TODO : Layer
+//	const vector<shared_ptr<GameObject>>& gameObjects = scene->GetGameObjects();
+//
+//	for (auto& gameObject : gameObjects)
+//	{
+//		if (gameObject->GetMeshRenderer() == nullptr)
+//			continue;
+//
+//		if (IsCulled(gameObject->GetLayerIndex()))
+//			continue;
+//
+//		gameObject->GetMeshRenderer()->Render();
+//	}
+//}
+
+void Camera::SortGameObject()
+{
+	shared_ptr<Scene> scene = GET_SINGLE(SceneManager)->GetActiveScene();
+	const vector<shared_ptr<GameObject>>& gameObjects = scene->GetGameObjects();
+
+	_vecForward.clear();
+	_vecDeferred.clear();
+
+	for (auto& gameObject : gameObjects)
+	{
+		if (gameObject->GetMeshRenderer() == nullptr) continue;
+
+		if(IsCulled(gameObject->GetLayerIndex())) continue;
+
+		SHADER_TYPE shaderType = gameObject->GetMeshRenderer()->GetMaterial()->GetShader()->GetShaderType();
+		switch (shaderType)
+		{
+		case SHADER_TYPE::FORWARD:
+			_vecForward.emplace_back(gameObject);
+			break;
+		case SHADER_TYPE::DEFERRED:
+			_vecDeferred.emplace_back(gameObject);
+			break;
+		}
+	}
+}
+
+void Camera::Render_Forward()
 {
 	S_MatView = _matView;
 	S_MatProjection = _matProjection;
 
-	shared_ptr<Scene> scene = GET_SINGLE(SceneManager)->GetActiveScene();
-
-	// TODO : Layer
-	const vector<shared_ptr<GameObject>>& gameObjects = scene->GetGameObjects();
-
-	for (auto& gameObject : gameObjects)
+	for (auto& gameObject : _vecForward)
 	{
-		if (gameObject->GetMeshRenderer() == nullptr)
-			continue;
+		gameObject->GetMeshRenderer()->Render();
+	}
+}
 
-		if (IsCulled(gameObject->GetLayerIndex()))
-			continue;
+void Camera::Render_Deferred()
+{
+	S_MatView = _matView;
+	S_MatProjection = _matProjection;
 
+	for (auto& gameObject : _vecDeferred)
+	{
 		gameObject->GetMeshRenderer()->Render();
 	}
 }

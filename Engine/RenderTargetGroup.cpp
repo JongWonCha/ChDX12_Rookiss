@@ -13,15 +13,20 @@ void RenderTargetGroup::Create(RENDER_TARGET_GROUP_TYPE groupType, vector<Render
 	_rtvHeapSize = DEVICE->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 }
 
-void RenderTargetGroup::OMSetRenderTargets(uint32 count, uint32 offset)
+void RenderTargetGroup::OMSetRenderTarget(uint32 count, uint32 offset)
 {
-	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle = CD3DX12_CPU_DESCRIPTOR_HANDLE(SINGLEDESCRIPTORALLOCATOR->GetRTVDescriptorHeapStart(), offset * _rtvHeapSize);
+	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle = CD3DX12_CPU_DESCRIPTOR_HANDLE(SINGLEDESCRIPTORALLOCATOR->GetRTVDescriptorHeapStart(), offset, _rtvHeapSize);
 	CMD_LIST->OMSetRenderTargets(count, &rtvHandle, FALSE/*1°³¸¸ »ç¿ë*/, &SINGLEDESCRIPTORALLOCATOR->GetDSVDescriptorHeapStart());
 }
 
-void RenderTargetGroup::OMSetRenderTargets()
+void RenderTargetGroup::OMSetRenderTargets(uint32 index)
 {
-	CMD_LIST->OMSetRenderTargets(_rtCount, &(SINGLEDESCRIPTORALLOCATOR->GetRTVDescriptorHeapStart()), TRUE/*´ÙÁß ·»´õ Å¸°Ù*/, &SINGLEDESCRIPTORALLOCATOR->GetDSVDescriptorHeapStart());
+	//int32 curr = index * RENDER_TARGET_G_BUFFER_GROUP_MEMBER_COUNT;
+
+	CD3DX12_CPU_DESCRIPTOR_HANDLE gBufferRTVHandle = CD3DX12_CPU_DESCRIPTOR_HANDLE(SINGLEDESCRIPTORALLOCATOR->GetRTVDescriptorHeapStart(), SWAP_CHAIN_BUFFER_COUNT, _rtvHeapSize);
+	gBufferRTVHandle.Offset(index * RENDER_TARGET_G_BUFFER_GROUP_MEMBER_COUNT, _rtvHeapSize);
+
+	CMD_LIST->OMSetRenderTargets(RENDER_TARGET_G_BUFFER_GROUP_MEMBER_COUNT, &gBufferRTVHandle, TRUE/*´ÙÁß ·»´õ Å¸°Ù*/, &SINGLEDESCRIPTORALLOCATOR->GetDSVDescriptorHeapStart());
 }
 
 void RenderTargetGroup::ClearRenderTargetView(uint32 index)
@@ -32,12 +37,16 @@ void RenderTargetGroup::ClearRenderTargetView(uint32 index)
 	CMD_LIST->ClearDepthStencilView(SINGLEDESCRIPTORALLOCATOR->GetDSVDescriptorHeapStart(), D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 }
 
-void RenderTargetGroup::ClearRenderTargetView()
+void RenderTargetGroup::ClearRenderTargetViews(uint32 index)
 {
-	for (uint32 i = 0; i < _rtCount; ++i)
+	float clearColor[4] = { 1.f, 1.f, 1.f, 1.f };
+	CD3DX12_CPU_DESCRIPTOR_HANDLE gBufferRTVHandle = CD3DX12_CPU_DESCRIPTOR_HANDLE(SINGLEDESCRIPTORALLOCATOR->GetRTVDescriptorHeapStart(), SWAP_CHAIN_BUFFER_COUNT * _rtvHeapSize);
+	gBufferRTVHandle.Offset(index * RENDER_TARGET_G_BUFFER_GROUP_MEMBER_COUNT, _rtvHeapSize);
+	//gBufferRTVHandle
+	for (uint32 i = 0; i < RENDER_TARGET_G_BUFFER_GROUP_MEMBER_COUNT; ++i)
 	{
-		D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle = CD3DX12_CPU_DESCRIPTOR_HANDLE(SINGLEDESCRIPTORALLOCATOR->GetRTVDescriptorHeapStart(), i * _rtvHeapSize);
-		CMD_LIST->ClearRenderTargetView(rtvHandle, _rtVec[i].clearColor, 0, nullptr);
+		CMD_LIST->ClearRenderTargetView(gBufferRTVHandle, clearColor, 0, nullptr);
+		gBufferRTVHandle.Offset(1, _rtvHeapSize);
 	}
 	CMD_LIST->ClearDepthStencilView(SINGLEDESCRIPTORALLOCATOR->GetDSVDescriptorHeapStart(), D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 }

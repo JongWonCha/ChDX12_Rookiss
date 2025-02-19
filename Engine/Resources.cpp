@@ -253,7 +253,7 @@ void Resources::CreateDefaultShader()
 		};
 		shared_ptr<Shader> shader = make_shared<Shader>();
 		shader->Init(L"..\\Resources\\Shader\\deferred.hlsl", info);
-		Add<Shader>(L"Default", shader);
+		Add<Shader>(L"Deferred", shader);
 	}
 
 	{

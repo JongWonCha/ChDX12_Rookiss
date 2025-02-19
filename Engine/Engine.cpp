@@ -179,8 +179,10 @@ void Engine::CreateRenderTargetGroups()
 			wstring name = L"SwapChainTarget_" + std::to_wstring(i);
 
 			ComPtr<ID3D12Resource> rtResource;
+			float clearColor[4] = {1.f, 1.f, 1.f, 1.f};
 			_swapChain->GetSwapChain()->GetBuffer(i, IID_PPV_ARGS(&rtResource));
 			rtVec[i].target = GET_SINGLE(Resources)->CreateTextureFromResource(name, rtResource);
+			//rtVec[i].clearColor = clearColor;
 		}
 
 		_rtGroups[static_cast<uint8>(RENDER_TARGET_GROUP_TYPE::SWAP_CHAIN)] = make_shared<RenderTargetGroup>();

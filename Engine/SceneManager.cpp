@@ -99,12 +99,13 @@ shared_ptr<Scene> SceneManager::LoadTestScene()
 #pragma endregion
 
 #pragma region UI_Test
+	for(int32 i = 0; i < 3; ++i)
 	{
 		shared_ptr<GameObject> rect = make_shared<GameObject>();
 		rect->SetLayerIndex(GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI"));
 		rect->AddComponent(make_shared<Transform>());
-		rect->GetTransform()->SetLocalPosition(Vec3(0.f, 0.f, 500.f));
-		rect->GetTransform()->SetLocalScale(Vec3(100.f, 100.f, 100.f));
+		rect->GetTransform()->SetLocalPosition(Vec3(-500.f + (i * 160), 250.f, 500.f));
+		rect->GetTransform()->SetLocalScale(Vec3(150.f, 100.f, 100.f));
 		shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
 		{
 			shared_ptr<Mesh> mesh = GET_SINGLE(Resources)->LoadRectangleMesh();
@@ -112,10 +113,11 @@ shared_ptr<Scene> SceneManager::LoadTestScene()
 		}
 		{
 			shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"Forward");
-			shared_ptr<Texture> base = GET_SINGLE(Resources)->Load<Texture>(L"normalFlat", L"..\\Resources\\Texture\\normal_flat.dds");
+			//shared_ptr<Texture> base = GET_SINGLE(Resources)->Load<Texture>(L"normalFlat", L"..\\Resources\\Texture\\normal_flat.dds");
+			shared_ptr<Texture> texture = GEngine->GetRTGroup(RENDER_TARGET_GROUP_TYPE::G_BUFFER)->GetRTTexture(i);
 			shared_ptr<Material> material = make_shared<Material>();
 			material->SetShader(shader);
-			material->SetTexture(0, base);
+			material->SetTexture(0, texture);
 			meshRenderer->SetMaterial(material);
 		}
 		rect->AddComponent(meshRenderer);
@@ -135,7 +137,7 @@ shared_ptr<Scene> SceneManager::LoadTestScene()
 		meshRenderer->SetMesh(cubeMesh);
 		
 		{
-			shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"Forward");
+			shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"Deferred");
 			shared_ptr<Material> material = make_shared<Material>();
 			material->SetShader(shader);
 			material->SetTexture(0, base);

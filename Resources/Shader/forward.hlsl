@@ -57,17 +57,17 @@ float4 PS_Main(VS_OUT input) : SV_Target
         
     LightColor totalColor = (LightColor) 0.f;
 
-    for (int i = 0; i < g_lightCount; ++i)
-    {
-        LightColor color = CalculateLightColor(i, viewNormal, input.viewPos);
-        totalColor.diffuse += color.diffuse;
-        totalColor.ambient += color.ambient;
-        totalColor.specular += color.specular;
-    }
+    //for (int i = 0; i < g_lightCount; ++i)
+    //{
+    //    LightColor color = CalculateLightColor(i, viewNormal, input.viewPos);
+    //    totalColor.diffuse += color.diffuse;
+    //    totalColor.ambient += color.ambient;
+    //    totalColor.specular += color.specular;
+    //}
 
-    color.xyz = (totalColor.diffuse.xyz * color.xyz)
-        + totalColor.ambient.xyz * color.xyz
-        + totalColor.specular.xyz;
+    //color.xyz = (totalColor.diffuse.xyz * color.xyz)
+    //    + totalColor.ambient.xyz * color.xyz
+    //    + totalColor.specular.xyz;
 
     return color;
 }

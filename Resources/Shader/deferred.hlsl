@@ -64,8 +64,8 @@ PS_OUT PS_Main(VS_OUT input)
     }
     
 
-    output.position = float4(input.viewPos, 1.f);
-    output.normal = float4(viewNormal, 1.f);
+    output.position = float4(input.viewPos.xyz, 0.f);
+    output.normal = float4(viewNormal.xyz, 0.f);
     output.color = color;
     
     return output;

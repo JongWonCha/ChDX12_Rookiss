@@ -14,10 +14,16 @@ public:
 	virtual ~Camera();
 
 	virtual void FinalUpdate() override;
-	void Render();
+	//void Render();
+
+
 
 	void SetProjectionType(PROJECTION_TYPE type) { _type = type; }
 	PROJECTION_TYPE GetProjectionType() { return _type; }
+
+	void SortGameObject();
+	void Render_Forward();
+	void Render_Deferred();
 
 	void SetCullingMaskLayerOnOff(uint8 layer, bool on)
 	{
@@ -43,6 +49,10 @@ private:
 	Matrix _matProjection = {};
 
 	uint32 _cullingMask = 0;// 비트와이즈 연산으로 레이어를 체크할 것이기 때문에 uint32로 선언, 비트 값이 0이면 렌더링 함.
+
+private:
+	vector<shared_ptr<GameObject>> _vecForward;
+	vector<shared_ptr<GameObject>> _vecDeferred;
 
 public:
 	// temp
