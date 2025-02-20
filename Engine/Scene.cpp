@@ -65,7 +65,12 @@ void Scene::Render()
 	mainCamera->SortGameObject();
 	mainCamera->Render_Deferred();
 
+	GEngine->GetRTGroup(RENDER_TARGET_GROUP_TYPE::G_BUFFER)->WaitTargetToResource();
+
 	RenderLights();
+
+	GEngine->GetRTGroup(RENDER_TARGET_GROUP_TYPE::LIGHTING)->WaitTargetToResource();
+
 	RenderFinal();
 
 	mainCamera->Render_Forward();
@@ -99,12 +104,11 @@ void Scene::RenderFinal()
 	D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle = {};
 	DESCRIPTORPOOL->AllocDescriptorTable(&cpuHandle, &gpuHandle, 1);
 
-	shared_ptr<Material> finalMaterial = GET_SINGLE(Resources)->Get<Material>(L"Final");
-	finalMaterial->PushData();
+	GET_SINGLE(Resources)->Get<Material>(L"Final")->PushData();
 
-	//GET_SINGLE(Resources)->Get<Material>(L"Final")->PushData();
 	DESCRIPTORPOOL->AllocDescriptorTable(&cpuHandle, &gpuHandle, 0);
 	gpuHandle.ptr -= DESCRIPTORPOOL->GetSrvDescirptorSize() * 8;
+
 	GET_SINGLE(Resources)->Get<Mesh>(L"Rectangle")->Render(gpuHandle);
 }
 

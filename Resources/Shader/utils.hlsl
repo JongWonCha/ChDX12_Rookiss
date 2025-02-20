@@ -3,6 +3,8 @@
 
 #include "params.hlsl"
 
+const float FLT_EPSILON = 1.192092896e-07;
+
 LightColor CalculateLightColor(int lightIndex, float3 viewNormal, float3 viewPos)
 {
     LightColor color = (LightColor) 0.f;

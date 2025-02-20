@@ -226,7 +226,7 @@ shared_ptr<Scene> SceneManager::LoadTestScene()
 		light->GetLight()->SetDiffuse(Vec3(0.0f, 0.5f, 0.0f));
 		light->GetLight()->SetAmbient(Vec3(0.0f, 0.3f, 0.0f));
 		light->GetLight()->SetSpecular(Vec3(0.0f, 0.3f, 0.0f));
-		light->GetLight()->SetLightRange(400.f);
+		light->GetLight()->SetLightRange(200.f);
 
 		scene->AddGameObject(light);
 	}
