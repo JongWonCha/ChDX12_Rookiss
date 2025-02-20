@@ -5,6 +5,7 @@
 #include "Engine.h"
 #include "ConstantBuffer.h"
 #include "Light.h"
+#include "Resources.h"
 
 void Scene::Awake()
 {
@@ -55,51 +56,69 @@ void Scene::Render()
     //backIndex ^= 1; // 비트 연산으로 0을 1로, 1을 0으로 변환
 	GEngine->GetRTGroup(RENDER_TARGET_GROUP_TYPE::SWAP_CHAIN)->ClearRenderTargetView(backIndex);
 
-	GEngine->GetRTGroup(RENDER_TARGET_GROUP_TYPE::G_BUFFER)->ClearRenderTargetViews(0);
+	GEngine->GetRTGroup(RENDER_TARGET_GROUP_TYPE::G_BUFFER)->ClearRenderTargetViews(RENDER_TARGET_G_BUFFER_GROUP_MEMBER_COUNT, 0, 0);
 
-	for (auto& gameObject : _gameObjects)
+	GEngine->GetRTGroup(RENDER_TARGET_GROUP_TYPE::LIGHTING)->ClearRenderTargetViews(RENDER_TARGET_LIGHTING_GROUP_MEMBER_COUNT, RENDER_TARGET_G_BUFFER_GROUP_MEMBER_COUNT, 0);
+
+	GEngine->GetRTGroup(RENDER_TARGET_GROUP_TYPE::G_BUFFER)->OMSetRenderTargets(RENDER_TARGET_G_BUFFER_GROUP_MEMBER_COUNT, 0, 0);
+	shared_ptr<Camera> mainCamera = _cameras[0];
+	mainCamera->SortGameObject();
+	mainCamera->Render_Deferred();
+
+	RenderLights();
+	RenderFinal();
+
+	mainCamera->Render_Forward();
+
+	for (auto& camera : _cameras)
 	{
-		if (gameObject->GetCamera() == nullptr) continue;
+		if (camera == mainCamera) continue;
 
-		//gameObject->GetCamera()->Render();
-
-		gameObject->GetCamera()->SortGameObject();
-
-		// Deferred OMSet
-		GEngine->GetRTGroup(RENDER_TARGET_GROUP_TYPE::G_BUFFER)->OMSetRenderTargets(0);
-		gameObject->GetCamera()->Render_Deferred();
-
-		// TODO : Light OMSet
-
-		// Swapchain OMSet
-		GEngine->GetRTGroup(RENDER_TARGET_GROUP_TYPE::SWAP_CHAIN)->OMSetRenderTarget(1, backIndex);
-		gameObject->GetCamera()->Render_Forward();
+		camera->SortGameObject();
+		camera->Render_Forward();
 	}
+}
+
+void Scene::RenderLights()
+{
+	GEngine->GetRTGroup(RENDER_TARGET_GROUP_TYPE::LIGHTING)->OMSetRenderTargets(RENDER_TARGET_LIGHTING_GROUP_MEMBER_COUNT, RENDER_TARGET_G_BUFFER_GROUP_MEMBER_COUNT, 0);
+
+	for (auto& light : _lights)
+	{
+		light->Render();
+	}
+}
+
+void Scene::RenderFinal()
+{
+
+	int8 backIndex = GEngine->GetSwapChain()->GetBackBufferIndex();
+	GEngine->GetRTGroup(RENDER_TARGET_GROUP_TYPE::SWAP_CHAIN)->OMSetRenderTarget(1, backIndex);
+
+	D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle = {};
+	D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle = {};
+	DESCRIPTORPOOL->AllocDescriptorTable(&cpuHandle, &gpuHandle, 1);
+
+	shared_ptr<Material> finalMaterial = GET_SINGLE(Resources)->Get<Material>(L"Final");
+	finalMaterial->PushData();
+
+	//GET_SINGLE(Resources)->Get<Material>(L"Final")->PushData();
+	DESCRIPTORPOOL->AllocDescriptorTable(&cpuHandle, &gpuHandle, 0);
+	gpuHandle.ptr -= DESCRIPTORPOOL->GetSrvDescirptorSize() * 8;
+	GET_SINGLE(Resources)->Get<Mesh>(L"Rectangle")->Render(gpuHandle);
 }
 
 void Scene::PushLightData()
 {
-	/*CB_CONTAINER* lightCB = CONSTANTBUFFER(CONSTANT_BUFFER_TYPE::LIGHT)->Alloc();
-	Constant_LightParams* lightParams = (Constant_LightParams*)lightCB->pSystemMemAddr;
-
-	for (auto& gameObject : _gameObjects)
-	{
-		if (gameObject->GetLight() == nullptr) continue;
-
-		const LightInfo& lightInfo = gameObject->GetLight()->GetLightInfo();
-
-		lightParams->lights[lightParams->lightCount] = lightInfo;
-		lightParams->lightCount++;
-	}
-	CMD_LIST->SetGraphicsRootConstantBufferView(0, lightCB->pGPUMemAddr);*/
-
 	Constant_LightParams lightParams = {};
-	for (auto& gameObject : _gameObjects)
+	for (auto& light : _lights)
 	{
-		if (gameObject->GetLight() == nullptr)
+		if (light == nullptr)
 			continue;
 
-		const LightInfo& lightInfo = gameObject->GetLight()->GetLightInfo();
+		const LightInfo& lightInfo = light->GetLightInfo();
+
+		light->SetLightIndex(lightParams.lightCount);
 
 		lightParams.lights[lightParams.lightCount] = lightInfo;
 		lightParams.lightCount++;
@@ -109,11 +128,33 @@ void Scene::PushLightData()
 
 void Scene::AddGameObject(shared_ptr<GameObject> gameObject)
 {
+	if (gameObject->GetCamera() != nullptr)
+	{
+		_cameras.emplace_back(gameObject->GetCamera());
+	}
+	else if (gameObject->GetLight() != nullptr)
+	{
+		_lights.emplace_back(gameObject->GetLight());
+	}
+
 	_gameObjects.emplace_back(gameObject);
 }
 
 void Scene::RemoveGameObject(shared_ptr<GameObject> gameObject)
 {
+	if (gameObject->GetCamera() != nullptr)
+	{
+		auto findIt = std::find(_cameras.begin(), _cameras.end(), gameObject->GetCamera());
+		if (findIt != _cameras.end())
+			_cameras.erase(findIt);
+	}
+	else if (gameObject->GetLight() != nullptr)
+	{
+		auto findIt = std::find(_lights.begin(), _lights.end(), gameObject->GetLight());
+		if (findIt != _lights.end())
+			_lights.erase(findIt);
+	}
+
 	auto findIt = std::find(_gameObjects.begin(), _gameObjects.end(), gameObject);
 	if (findIt != _gameObjects.end())
 	{

@@ -176,6 +176,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 //
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
+    RECT rect = { 0, 0, 0, 0 };
     switch (message)
     {
     case WM_COMMAND:
@@ -204,12 +205,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         }
         break;
     case WM_SIZE:
-        GWindowInfo.width = LOWORD(lParam);
-        GWindowInfo.height = HIWORD(lParam);
+        if (!GWindowInfo.hwnd) break;
+        ::GetWindowRect(GWindowInfo.hwnd, &rect);
+        GWindowInfo.width = rect.right - rect.left;
+        GWindowInfo.height = rect.bottom - rect.top;
         if (GWindowInfo.hwnd == nullptr) break;
         if (GEngine)
         {
-            game->ResizeWindow(LOWORD(lParam), HIWORD(lParam));
+            game->ResizeWindow(GWindowInfo.width, GWindowInfo.height);
         }
         break;
     case WM_DESTROY:

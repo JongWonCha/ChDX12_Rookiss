@@ -40,10 +40,9 @@ VS_OUT VS_Main(VS_IN input)
 float4 PS_Main(VS_OUT input) : SV_Target
 {
     float4 color = float4(1.f, 1.f, 1.f, 1.f);
-    
     if (g_tex_on_0)
         color = g_tex_0.Sample(g_sam_0, input.uv);
-    
+
     float3 viewNormal = input.viewNormal;
     if (g_tex_on_1)
     {
@@ -54,20 +53,54 @@ float4 PS_Main(VS_OUT input) : SV_Target
         float3x3 matTBN = { input.viewTangent, input.viewBinormal, input.viewNormal };
         viewNormal = normalize(mul(tangentSpaceNormal, matTBN));
     }
-        
+
     LightColor totalColor = (LightColor) 0.f;
 
-    //for (int i = 0; i < g_lightCount; ++i)
-    //{
-    //    LightColor color = CalculateLightColor(i, viewNormal, input.viewPos);
-    //    totalColor.diffuse += color.diffuse;
-    //    totalColor.ambient += color.ambient;
-    //    totalColor.specular += color.specular;
-    //}
+    for (int i = 0; i < g_lightCount; ++i)
+    {
+        LightColor color = CalculateLightColor(i, viewNormal, input.viewPos);
+        totalColor.diffuse += color.diffuse;
+        totalColor.ambient += color.ambient;
+        totalColor.specular += color.specular;
+    }
 
-    //color.xyz = (totalColor.diffuse.xyz * color.xyz)
-    //    + totalColor.ambient.xyz * color.xyz
-    //    + totalColor.specular.xyz;
+    color.xyz = (totalColor.diffuse.xyz * color.xyz)
+        + totalColor.ambient.xyz * color.xyz
+        + totalColor.specular.xyz;
+
+    return color;
+}
+
+// [Texture Shader]
+// g_tex_0 : Output Texture
+// AlphaBlend : true
+struct VS_TEX_IN
+{
+    float3 pos : POSITION;
+    float2 uv : TEXCOORD;
+};
+
+struct VS_TEX_OUT
+{
+    float4 pos : SV_Position;
+    float2 uv : TEXCOORD;
+};
+
+VS_TEX_OUT VS_Tex(VS_TEX_IN input)
+{
+    VS_TEX_OUT output = (VS_TEX_OUT) 0;
+
+    output.pos = mul(float4(input.pos, 1.f), g_matWVP);
+    output.uv = input.uv;
+
+    return output;
+}
+
+float4 PS_Tex(VS_TEX_OUT input) : SV_Target
+{
+    float4 color = float4(1.f, 1.f, 1.f, 1.f);
+    if (g_tex_on_0)
+        color = g_tex_0.Sample(g_sam_0, input.uv);
 
     return color;
 }

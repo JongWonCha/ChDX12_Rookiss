@@ -7,9 +7,10 @@ class Texture;
 
 enum
 {
-	MATERIAL_INT_COUNT = 5,
-	MATERIAL_FLOAT_COUNT = 5,
-	MATERIAL_TEXTURE_COUNT = 5,
+	MATERIAL_INT_COUNT = 4,
+	MATERIAL_FLOAT_COUNT = 4,
+	MATERIAL_TEXTURE_COUNT = 4,
+	MATERIAL_VECTOR2_COUNT = 4,
 };
 
 
@@ -19,6 +20,7 @@ struct Constant_MaterialParams
 	void SetInt(uint8 index, int32 value) { intParams[index] = value; }
 	void SetFloat(uint8 index, float value) { floatParams[index] = value; }
 	void SetTexOn(uint8 index, int32 value) { texOnParams[index] = value; }
+	void SetVec2(uint8 index, Vec2 value) { vec2Params[index] = value; }
 
 	void SetAllInt(int32 value)
 	{
@@ -32,9 +34,16 @@ struct Constant_MaterialParams
 			floatParams[i] = value;
 	}
 
+	void SetAllVec2(Vec2 value)
+	{
+		for (int i = 0; i < MATERIAL_VECTOR2_COUNT; ++i)
+			vec2Params[i] = value;
+	}
+
 	array<int32, MATERIAL_INT_COUNT> intParams;
 	array<float, MATERIAL_FLOAT_COUNT> floatParams;
 	array<int32, MATERIAL_TEXTURE_COUNT> texOnParams;
+	array<Vec2, MATERIAL_VECTOR2_COUNT> vec2Params;
 };
 
 class Material : public Object
@@ -53,6 +62,11 @@ public:
 	{
 		_textures[index] = texture;
 		_params.SetTexOn(index, (texture == nullptr) ? 0 : 1);
+	}
+
+	void SetVec2(uint8 index, Vec2 value)
+	{
+		_params.SetVec2(index, value); 
 	}
 
 	void PushData();

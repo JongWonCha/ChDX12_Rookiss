@@ -46,12 +46,11 @@ struct PS_OUT
 PS_OUT PS_Main(VS_OUT input)
 {
     PS_OUT output = (PS_OUT) 0;
-    
+
     float4 color = float4(1.f, 1.f, 1.f, 1.f);
-    
     if (g_tex_on_0)
         color = g_tex_0.Sample(g_sam_0, input.uv);
-    
+
     float3 viewNormal = input.viewNormal;
     if (g_tex_on_1)
     {
@@ -62,12 +61,11 @@ PS_OUT PS_Main(VS_OUT input)
         float3x3 matTBN = { input.viewTangent, input.viewBinormal, input.viewNormal };
         viewNormal = normalize(mul(tangentSpaceNormal, matTBN));
     }
-    
 
     output.position = float4(input.viewPos.xyz, 0.f);
     output.normal = float4(viewNormal.xyz, 0.f);
     output.color = color;
-    
+
     return output;
 }
 

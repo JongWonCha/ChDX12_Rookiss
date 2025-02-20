@@ -255,6 +255,7 @@
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
+    <FxCompile Include="..\Resources\Shader\lighting.hlsl" />
     <FxCompile Include="..\Resources\Shader\params.hlsl">
       <FileType>Document</FileType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>

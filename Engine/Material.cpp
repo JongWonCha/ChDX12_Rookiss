@@ -10,6 +10,7 @@ Material::Material() : Object(OBJECT_TYPE::MATERIAL)
 
 	_params.SetAllFloat(0.f);
 	_params.SetAllInt(0);
+	_params.SetAllVec2(Vec2(0.f, 0.f));
 }
 
 Material::~Material()
