@@ -126,7 +126,7 @@ shared_ptr<Scene> SceneManager::LoadTestScene()
 		shared_ptr<GameObject> rect = make_shared<GameObject>();
 		rect->SetLayerIndex(GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI"));
 		rect->AddComponent(make_shared<Transform>());
-		rect->GetTransform()->SetLocalPosition(Vec3(-520.f + (i * 140), 330.f, 500.f));
+		rect->GetTransform()->SetLocalPosition(Vec3(-520.f + (i * 140), 350.f, 500.f));
 		rect->GetTransform()->SetLocalScale(Vec3(120.f, 80.f, 100.f));
 		shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
 		{
