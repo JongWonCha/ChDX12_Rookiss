@@ -21,22 +21,27 @@ void Engine::Init(const WindowInfo& window)
 	_scissorRect = CD3DX12_RECT(0, 0, window.width, window.height);
 
 	_device = make_shared<Device>();
-	_cmdQueue = make_shared<CommandQueue>();
+	_graphicsCmdQueue = make_shared<GraphicsCommandQueue>();
+	_computeCmdQueue = make_shared<ComputeCommandQueue>();
 	_swapChain = make_shared<SwapChain>();
 	_rootSignature = make_shared<RootSignature>();
-	_descriptorPool = make_shared<DescriptorPool>();
+
+	_graphicsDescPool = make_shared<GraphicsDescriptorPool>();
+	_computeDescPool = make_shared<ComputeDescriptorPool>();
+
 	_constantBuffers.emplace_back(make_shared<ConstantBuffer>()); // lightParams
 	_constantBuffers.emplace_back(make_shared<ConstantBuffer>()); // TransformParams
 	_constantBuffers.emplace_back(make_shared<ConstantBuffer>()); // MaterialParams
-	//_constantBuffers = make_shared<ConstantBuffer>();
+
 	_singleDescriptorAllocator = make_shared<SingleDescriptorAllocator>();
-	//_depthStencilBuffer = make_shared<DepthStencilBuffer>();
 
 	_device->Init();
-	_cmdQueue->Init(_device->GetDevice(), _swapChain);
-	_swapChain->Init(window, _device->GetDevice(), _device->GetDXGI(), _cmdQueue->GetCmdQueue());
+	_graphicsCmdQueue->Init(_device->GetDevice(), _swapChain);
+	_computeCmdQueue->Init(_device->GetDevice());
+	_swapChain->Init(window, _device->GetDevice(), _device->GetDXGI(), _graphicsCmdQueue->GetCmdQueue());
 	_rootSignature->Init();
-	_descriptorPool->Init(_device->GetDevice(), 256 * 9); // 오브젝트 갯수 * 오브젝트 당 넘겨줄 레지스터 갯수(b1 ~ b4, t0 ~ t4)
+	_graphicsDescPool->Init(_device->GetDevice(), 256 * 9); // 오브젝트 갯수 * 오브젝트 당 넘겨줄 레지스터 갯수(b1 ~ b4, t0 ~ t4)
+	_computeDescPool->Init(_device->GetDevice(), 20 * 5);
 	_constantBuffers[0]->Init(sizeof(Constant_LightParams), 1);
 	_constantBuffers[1]->Init(sizeof(Constant_TransformParams), 256);
 	_constantBuffers[2]->Init(sizeof(Constant_MaterialParams), 256);
@@ -67,7 +72,7 @@ void Engine::LateUpdate()
 
 void Engine::RenderBegin()
 {
-	_cmdQueue->RenderBegin(&_viewport, &_scissorRect);
+	_graphicsCmdQueue->RenderBegin(&_viewport, &_scissorRect);
 }
 
 void Engine::Render()
@@ -81,7 +86,7 @@ void Engine::Render()
 
 void Engine::RenderEnd()
 {
-	_cmdQueue->RenderEnd();
+	_graphicsCmdQueue->RenderEnd();
 }
 
 void Engine::ResizeWindow(int32 width, int32 height)

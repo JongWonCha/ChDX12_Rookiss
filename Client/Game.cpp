@@ -70,7 +70,8 @@ void Game::Update()
 
 	//GEngine->RenderEnd();
 
-	GEngine->GetDescriptorPool()->Reset();
+	GEngine->GetGraphicsDescPool()->Reset();
+	GEngine->GetComputeDescPool()->Reset();
 	CONSTANTBUFFER(CONSTANT_BUFFER_TYPE::LIGHT)->Reset();
 	CONSTANTBUFFER(CONSTANT_BUFFER_TYPE::TRANSFORM)->Reset();
 	CONSTANTBUFFER(CONSTANT_BUFFER_TYPE::MATERIAL)->Reset();

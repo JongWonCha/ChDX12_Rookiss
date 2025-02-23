@@ -58,7 +58,7 @@ void Transform::PushData()
 
 	D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle = {};
 	D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle = {};
-	DESCRIPTORPOOL->AllocDescriptorTable(&cpuHandle, &gpuHandle, 1);
+	GRAPHICS_DESC_POOL->AllocDescriptorTable(&cpuHandle, &gpuHandle, 1);
 
 	DEVICE->CopyDescriptorsSimple(1, cpuHandle, AllocatedCB->CBVHandle, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 }

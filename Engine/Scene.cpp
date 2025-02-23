@@ -102,12 +102,12 @@ void Scene::RenderFinal()
 
 	D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle = {};
 	D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle = {};
-	DESCRIPTORPOOL->AllocDescriptorTable(&cpuHandle, &gpuHandle, 1);
+	GRAPHICS_DESC_POOL->AllocDescriptorTable(&cpuHandle, &gpuHandle, 1);
 
-	GET_SINGLE(Resources)->Get<Material>(L"Final")->PushData();
+	GET_SINGLE(Resources)->Get<Material>(L"Final")->PushGraphicsData();
 
-	DESCRIPTORPOOL->AllocDescriptorTable(&cpuHandle, &gpuHandle, 0);
-	gpuHandle.ptr -= DESCRIPTORPOOL->GetSrvDescirptorSize() * 8;
+	GRAPHICS_DESC_POOL->AllocDescriptorTable(&cpuHandle, &gpuHandle, 0);
+	gpuHandle.ptr -= GRAPHICS_DESC_POOL->GetSrvDescirptorSize() * 8;
 
 	GET_SINGLE(Resources)->Get<Mesh>(L"Rectangle")->Render(gpuHandle);
 }

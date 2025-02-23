@@ -28,6 +28,9 @@ Texture::~Texture()
 	if (_textureHandle->dsvDesc.ptr != 0)
 		SINGLEDESCRIPTORALLOCATOR->FreeDescriptorHandleForDSV(_textureHandle->dsvDesc);
 
+	if(_textureHandle->uavDesc.ptr != 0)
+		SINGLEDESCRIPTORALLOCATOR->FreeDescriptorHandleForSRVUAV(_textureHandle->uavDesc);
+
 	_textureHandle = nullptr;
 
 }
@@ -101,9 +104,9 @@ void Texture::Load(const wstring& path)
 		static_cast<unsigned int>(subResources.size()),
 		subResources.data());
 
-	_textureType = TEXTURE_TYPE::SRV_UAV;
+	_textureType = TEXTURE_TYPE::SRV;
 
-	GEngine->GetCmdQueue()->FlushResourceCommandQueue();
+	GEngine->GetGraphicsCmdQueue()->FlushResourceCommandQueue();
 
 	CreateView(texResource, &image);
 }
@@ -118,26 +121,29 @@ void Texture::Create(DXGI_FORMAT format, uint32 width, uint32 height,
 	desc.Flags = resFlags;
 
 	D3D12_CLEAR_VALUE optimizedClearValue = {};
-	D3D12_RESOURCE_STATES resoucesStates = D3D12_RESOURCE_STATE_COMMON;
+	D3D12_CLEAR_VALUE* pOptimizedClearValue = nullptr;
+	D3D12_RESOURCE_STATES resourcesState = D3D12_RESOURCE_STATE_COMMON;
 
 	if (resFlags & D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL)
 	{
-		resoucesStates = D3D12_RESOURCE_STATE_DEPTH_WRITE;
+		resourcesState = D3D12_RESOURCE_STATE_DEPTH_WRITE;
 		optimizedClearValue = CD3DX12_CLEAR_VALUE(DXGI_FORMAT_D32_FLOAT, 1.0f, 0);
+		pOptimizedClearValue = &optimizedClearValue;
 	}
 	else if (resFlags & D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET)
 	{
-		resoucesStates = D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_COMMON;
+		resourcesState = D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_COMMON;
 		float arrFloat[4] = { clearColor.x, clearColor.y, clearColor.z, clearColor.w };
 		optimizedClearValue = CD3DX12_CLEAR_VALUE(format, arrFloat);
+		pOptimizedClearValue = &optimizedClearValue;
 	}
 
-	HREFTYPE hr = DEVICE->CreateCommittedResource(
+	HRESULT hr = DEVICE->CreateCommittedResource(
 		&heapProperty,
 		heapFlags,
 		&desc,
-		resoucesStates,
-		&optimizedClearValue,
+		resourcesState,
+		pOptimizedClearValue,
 		IID_PPV_ARGS(texResource.GetAddressOf())
 	);
 
@@ -216,6 +222,7 @@ void Texture::CreateFromResource(ComPtr<ID3D12Resource> tex2D)
 	D3D12_RESOURCE_DESC desc = tex2D->GetDesc();
 	_textureHandle = make_shared<TEXTURE_HANDLE>();
 	_textureHandle->pTexResource = tex2D.Get();
+	_textureType = TEXTURE_TYPE::END;
 
 	if (desc.Flags & D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL)
 	{
@@ -226,14 +233,28 @@ void Texture::CreateFromResource(ComPtr<ID3D12Resource> tex2D)
 			_textureType = TEXTURE_TYPE::DSV;
 		}
 	}
-	else if (desc.Flags & D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET)
+	else
 	{
-		// TODO : ·»´õ Å¸°Ù ºä »ý¼º
-		if (SINGLEDESCRIPTORALLOCATOR->AllocDescriptorHandleForRTV(&descriptorHandle))
+		if (desc.Flags & D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET)
 		{
+			BOOL hr = SINGLEDESCRIPTORALLOCATOR->AllocDescriptorHandleForRTV(&descriptorHandle);
+			if (!hr) __debugbreak();
+
 			DEVICE->CreateRenderTargetView(tex2D.Get(), nullptr, descriptorHandle);
 			_textureHandle->rtvDesc = descriptorHandle;
 			_textureType = TEXTURE_TYPE::RTV;
+		}
+		if (desc.Flags & D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS)
+		{
+			D3D12_UNORDERED_ACCESS_VIEW_DESC uavDesc = {};
+			uavDesc.Format = desc.Format;
+			uavDesc.ViewDimension = D3D12_UAV_DIMENSION_TEXTURE2D;
+
+			BOOL hr = SINGLEDESCRIPTORALLOCATOR->AllocDescriptorHandleForSRVUAV(&descriptorHandle);
+			if (!hr) __debugbreak();
+			DEVICE->CreateUnorderedAccessView(tex2D.Get(), nullptr, &uavDesc, descriptorHandle);
+			_textureHandle->uavDesc = descriptorHandle;
+			_textureType = TEXTURE_TYPE::UAV;
 		}
 
 
@@ -242,12 +263,14 @@ void Texture::CreateFromResource(ComPtr<ID3D12Resource> tex2D)
 		srvDesc.Format = desc.Format;
 		srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
 		srvDesc.Texture2D.MipLevels = 1;
-		if (SINGLEDESCRIPTORALLOCATOR->AllocDescriptorHandleForSRVUAV(&descriptorHandle))
-		{
-			DEVICE->CreateShaderResourceView(tex2D.Get(), &srvDesc, descriptorHandle);
-			_textureHandle->srvDesc = descriptorHandle;
-			_textureType == TEXTURE_TYPE::RTV ? _textureType = TEXTURE_TYPE::RTV : _textureType = TEXTURE_TYPE::SRV_UAV;
-		}
+
+		BOOL hr = SINGLEDESCRIPTORALLOCATOR->AllocDescriptorHandleForSRVUAV(&descriptorHandle);
+		if (!hr) __debugbreak();
+
+		DEVICE->CreateShaderResourceView(tex2D.Get(), &srvDesc, descriptorHandle);
+		_textureHandle->srvDesc = descriptorHandle;
+
+		if (_textureType == TEXTURE_TYPE::END) _textureType = TEXTURE_TYPE::SRV;
 	}
 	
 }
@@ -269,7 +292,7 @@ void Texture::CreateView(ComPtr<ID3D12Resource> texResource, ScratchImage* image
 		_textureHandle = make_shared<TEXTURE_HANDLE>();
 		_textureHandle->pTexResource = texResource.Get();
 		_textureHandle->srvDesc = srv;
-		_textureType = TEXTURE_TYPE::SRV_UAV;
+		_textureType = TEXTURE_TYPE::SRV;
 	}
 }
 
@@ -284,6 +307,31 @@ shared_ptr<TEXTURE_HANDLE> Texture::GetTextureHandle()
 	return stringTexMap[texId];*/
 
 	return _textureHandle;
+}
+
+
+D3D12_CPU_DESCRIPTOR_HANDLE* Texture::GetSRVHandle()
+{
+	if (_textureHandle == nullptr) return nullptr;
+	return &_textureHandle->srvDesc;
+}
+
+D3D12_CPU_DESCRIPTOR_HANDLE* Texture::GetRTVHandle()
+{
+	if (_textureHandle == nullptr) return nullptr;
+	return &_textureHandle->rtvDesc;
+}
+
+D3D12_CPU_DESCRIPTOR_HANDLE* Texture::GetDSVHandle()
+{
+	if (_textureHandle == nullptr) return nullptr;
+	return &_textureHandle->dsvDesc;
+}
+
+D3D12_CPU_DESCRIPTOR_HANDLE* Texture::GetUAVHandle()
+{
+	if (_textureHandle == nullptr) return nullptr;
+	return &_textureHandle->uavDesc;
 }
 
 

@@ -24,7 +24,7 @@ void Light::Render()
 	GetTransform()->PushData();
 
 	_lightMaterial->SetInt(0, _lightIndex);
-	_lightMaterial->PushData();
+	_lightMaterial->PushGraphicsData();
 
 	switch (static_cast<LIGHT_TYPE>(_lightInfo.lightType))
 	{
@@ -37,9 +37,9 @@ void Light::Render()
 
 	D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle = {};
 	D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle = {};
-	DESCRIPTORPOOL->AllocDescriptorTable(&cpuHandle, &gpuHandle, 0);
+	GRAPHICS_DESC_POOL->AllocDescriptorTable(&cpuHandle, &gpuHandle, 0);
 
-	gpuHandle.ptr -= DESCRIPTORPOOL->GetSrvDescirptorSize() * 8;
+	gpuHandle.ptr -= GRAPHICS_DESC_POOL->GetSrvDescirptorSize() * 8;
 
 	_volumeMesh->Render(gpuHandle);
 }

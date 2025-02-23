@@ -93,7 +93,7 @@ void ConstantBuffer::SetGlobalData(void* buffer, uint32 size)
 {
 	assert(_elementSize == ((size + 255) & ~255));
 	::memcpy(&_systemMemAddr[0], buffer, size);
-	CMD_LIST->SetGraphicsRootConstantBufferView(0, _cbvBuffer->GetGPUVirtualAddress());
+	GRAPHICS_CMD_LIST->SetGraphicsRootConstantBufferView(0, _cbvBuffer->GetGPUVirtualAddress());
 }
 
 CB_CONTAINER* ConstantBuffer::Alloc()

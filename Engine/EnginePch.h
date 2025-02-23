@@ -94,6 +94,7 @@ struct TEXTURE_HANDLE
 	D3D12_CPU_DESCRIPTOR_HANDLE srvDesc = {};
 	D3D12_CPU_DESCRIPTOR_HANDLE rtvDesc = {};
 	D3D12_CPU_DESCRIPTOR_HANDLE dsvDesc = {};
+	D3D12_CPU_DESCRIPTOR_HANDLE uavDesc = {};
 };
 
 class Engine;
@@ -111,17 +112,22 @@ public:								\
 
 #define GET_SINGLE(type) type::GetInstance()
 
-#define DEVICE					GEngine->GetDevice()->GetDevice()
-#define CMD_LIST				GEngine->GetCmdQueue()->GetCmdList()
-#define ROOT_SIGNATURE			GEngine->GetRootSignature()->GetSignature()
-#define RESOURCE_CMD_LIST		GEngine->GetCmdQueue()->GetResourceCmdList()
+#define DEVICE						GEngine->GetDevice()->GetDevice()
 
-#define INPUT					GET_SINGLE(Input)
-#define TIMER					GET_SINGLE(Timer)
-#define DELTATIME				GET_SINGLE(Timer)->GetDeltaTime()
+#define GRAPHICS_CMD_LIST			GEngine->GetGraphicsCmdQueue()->GetGraphicsCmdList()
+#define RESOURCE_CMD_LIST			GEngine->GetGraphicsCmdQueue()->GetResourceCmdList()
+#define COMPUTE_CMD_LIST			GEngine->GetComputeCmdQueue()->GetComputeCmdList()
+
+#define GRAPHICS_ROOT_SIGNATURE		GEngine->GetRootSignature()->GetGraphicsRootSignature()
+#define COMPUTE_ROOT_SIGNATURE		GEngine->GetRootSignature()->GetComputeRootSignature()
+
+#define INPUT						GET_SINGLE(Input)
+#define TIMER						GET_SINGLE(Timer)
+#define DELTATIME					GET_SINGLE(Timer)->GetDeltaTime()
 
 #define CONSTANTBUFFER(type)		GEngine->GetCBByType(type)
-#define DESCRIPTORPOOL				GEngine->GetDescriptorPool()
+#define GRAPHICS_DESC_POOL			GEngine->GetGraphicsDescPool()
+#define COMPUTE_DESC_POOL			GEngine->GetComputeDescPool()
 #define SINGLEDESCRIPTORALLOCATOR	GEngine->GetSingleDescriptorAllocator()
 
 struct Constant_TransformParams

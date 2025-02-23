@@ -5,7 +5,8 @@ class SingleDescriptorAllocator;
 
 enum class TEXTURE_TYPE : uint8
 {
-	SRV_UAV,
+	SRV,
+	UAV,
 	RTV,
 	DSV,
 	END,
@@ -32,8 +33,13 @@ public:
 	void CreateView(ComPtr<ID3D12Resource> texResource, ScratchImage* image);
 	shared_ptr<TEXTURE_HANDLE> GetTextureHandle();
 
+	D3D12_CPU_DESCRIPTOR_HANDLE* GetSRVHandle();
+	D3D12_CPU_DESCRIPTOR_HANDLE* GetRTVHandle();
+	D3D12_CPU_DESCRIPTOR_HANDLE* GetDSVHandle();
+	D3D12_CPU_DESCRIPTOR_HANDLE* GetUAVHandle();
+
 private:
-	TEXTURE_TYPE _textureType = TEXTURE_TYPE::SRV_UAV;
+	TEXTURE_TYPE _textureType = TEXTURE_TYPE::SRV;
 	//ScratchImage					_image;
 	//ComPtr<ID3D12Resource>			_tex2D;
 

@@ -25,11 +25,13 @@ public:
 
 public:
 	shared_ptr<Device> GetDevice() { return _device; }
-	shared_ptr<CommandQueue> GetCmdQueue() { return _cmdQueue; }
+	shared_ptr<GraphicsCommandQueue> GetGraphicsCmdQueue() { return _graphicsCmdQueue; }
+	shared_ptr<ComputeCommandQueue> GetComputeCmdQueue() { return _computeCmdQueue; }
 	shared_ptr<SwapChain> GetSwapChain() { return _swapChain; }
 	shared_ptr<RootSignature> GetRootSignature() { return _rootSignature; }
 	shared_ptr<ConstantBuffer> GetCBByType(CONSTANT_BUFFER_TYPE type) { return _constantBuffers[static_cast<uint8>(type)]; }
-	shared_ptr<DescriptorPool> GetDescriptorPool() { return _descriptorPool; }
+	shared_ptr<GraphicsDescriptorPool> GetGraphicsDescPool() { return _graphicsDescPool; }
+	shared_ptr<ComputeDescriptorPool> GetComputeDescPool() { return _computeDescPool; }
 	shared_ptr<SingleDescriptorAllocator> GetSingleDescriptorAllocator() { return _singleDescriptorAllocator; }
 	const WindowInfo& GetWindow() const { return _window; }
 
@@ -51,11 +53,13 @@ private:
 	D3D12_RECT		_scissorRect = {};
 
 	shared_ptr<Device>						_device;
-	shared_ptr<CommandQueue>				_cmdQueue;
+	shared_ptr<GraphicsCommandQueue>		_graphicsCmdQueue;
+	shared_ptr<ComputeCommandQueue>			_computeCmdQueue;
 	shared_ptr<SwapChain>					_swapChain;
 	shared_ptr<RootSignature>				_rootSignature;
 	vector<shared_ptr<ConstantBuffer>>		_constantBuffers;
-	shared_ptr<DescriptorPool>				_descriptorPool;
+	shared_ptr<GraphicsDescriptorPool>		_graphicsDescPool;
+	shared_ptr<ComputeDescriptorPool>		_computeDescPool;
 	shared_ptr<SingleDescriptorAllocator>	_singleDescriptorAllocator;
 
 	array<shared_ptr<RenderTargetGroup>, RENDER_TARGET_GROUP_COUNT> _rtGroups;

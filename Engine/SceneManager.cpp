@@ -69,6 +69,30 @@ shared_ptr<Scene> SceneManager::LoadTestScene()
 	
 	/*shared_ptr<Mesh> sphereMesh = GET_SINGLE(Resources)->LoadSphereMesh();
 	shared_ptr<Mesh> cubeMesh = GET_SINGLE(Resources)->LoadCubeMesh();*/
+#pragma region COMPUTESHADER
+	{
+		shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"ComputeShader");
+
+		// Create UAV Texture »ý¼º
+		shared_ptr<Texture> texture = GET_SINGLE(Resources)->CreateTexture(L"UAVTexture",
+			DXGI_FORMAT_R8G8B8A8_UNORM, 1024, 1024,
+			CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT), D3D12_HEAP_FLAG_NONE,
+			D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS);
+
+		shared_ptr<Material> material = GET_SINGLE(Resources)->Get<Material>(L"ComputeShader");
+		material->SetShader(shader);
+		material->SetInt(0, 1);
+		material->PushComputeData();
+		D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle = {};
+		D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle = {};
+
+		COMPUTE_DESC_POOL->AllocDescriptorTable(&cpuHandle, &gpuHandle, 1);
+		DEVICE->CopyDescriptorsSimple(1, cpuHandle, *texture->GetUAVHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+
+		material->Dispatch(1, 1024, 1);
+	}
+#pragma endregion
+
 #pragma region Camera
 	{
 		shared_ptr<GameObject> camera = make_shared<GameObject>();
@@ -121,7 +145,7 @@ shared_ptr<Scene> SceneManager::LoadTestScene()
 #pragma endregion
 
 #pragma region UI_Test
-	for(int32 i = 0; i < 5; ++i)
+	for(int32 i = 0; i < 6; ++i)
 	{
 		shared_ptr<GameObject> rect = make_shared<GameObject>();
 		rect->SetLayerIndex(GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI"));
@@ -138,8 +162,10 @@ shared_ptr<Scene> SceneManager::LoadTestScene()
 			shared_ptr<Texture> texture;
 			if (i < 3)
 				texture = GEngine->GetRTGroup(RENDER_TARGET_GROUP_TYPE::G_BUFFER)->GetRTTexture(i);
-			else
+			else if (i < 5)
 				texture = GEngine->GetRTGroup(RENDER_TARGET_GROUP_TYPE::LIGHTING)->GetRTTexture(i - 3);
+			else
+				texture = GET_SINGLE(Resources)->Get<Texture>(L"UAVTexture");
 			shared_ptr<Material> material = make_shared<Material>();
 			material->SetShader(shader);
 			material->SetTexture(0, texture);
