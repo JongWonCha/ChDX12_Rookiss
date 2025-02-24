@@ -8,7 +8,7 @@ public:
 	void Init(const vector<Vertex>& vertexVec, const vector<uint32>& indexVec);
 	void CreateVertexBuffer(const vector<Vertex>& vec);
 	void CreateIndexBuffer(const vector<uint32>& vec);
-	void Render(D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle);
+	void Render(D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle, uint32 instanceCount = 1);
 
 
 	UINT64 Fence();

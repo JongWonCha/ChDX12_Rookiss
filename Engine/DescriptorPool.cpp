@@ -91,6 +91,18 @@ BOOL ComputeDescriptorPool::AllocDescriptorTable(D3D12_CPU_DESCRIPTOR_HANDLE* pO
     return TRUE;
 }
 
+BOOL ComputeDescriptorPool::AllocDescriptorTableByIndex(uint32 index, D3D12_CPU_DESCRIPTOR_HANDLE* pOutCPUDescriptor, D3D12_GPU_DESCRIPTOR_HANDLE* pOutGPUDescriptor)
+{
+    if (index + 1 > _maxDescCount) return FALSE;
+
+    *pOutCPUDescriptor = CD3DX12_CPU_DESCRIPTOR_HANDLE(_cpuHandle, index, _srvDescSize);
+    *pOutGPUDescriptor = CD3DX12_GPU_DESCRIPTOR_HANDLE(_gpuHandle, index, _srvDescSize);
+
+    return TRUE;
+}
+
+
+
 void ComputeDescriptorPool::Reset()
 {
     _allocatedDescCount = 0;

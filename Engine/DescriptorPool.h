@@ -47,6 +47,7 @@ public:
 	BOOL Init(ComPtr<ID3D12Device> device, UINT maxCount);
 
 	BOOL AllocDescriptorTable(D3D12_CPU_DESCRIPTOR_HANDLE* pOutCPUDescriptor, D3D12_GPU_DESCRIPTOR_HANDLE* pOutGPUDescriptor, UINT descriptorCount);
+	BOOL AllocDescriptorTableByIndex(uint32 index, D3D12_CPU_DESCRIPTOR_HANDLE* pOutCPUDescriptor, D3D12_GPU_DESCRIPTOR_HANDLE* pOutGPUDescriptor);
 	void Reset();
 	ComPtr<ID3D12DescriptorHeap> GetDescriptorHeap() { return _descHeap; }
 	UINT GetSrvDescirptorSize() { return _srvDescSize; }

@@ -106,8 +106,9 @@ void Scene::RenderFinal()
 
 	GET_SINGLE(Resources)->Get<Material>(L"Final")->PushGraphicsData();
 
+	GRAPHICS_DESC_POOL->AllocDescriptorTable(&cpuHandle, &gpuHandle, 6);
 	GRAPHICS_DESC_POOL->AllocDescriptorTable(&cpuHandle, &gpuHandle, 0);
-	gpuHandle.ptr -= GRAPHICS_DESC_POOL->GetSrvDescirptorSize() * 8;
+	gpuHandle.ptr -= GRAPHICS_DESC_POOL->GetSrvDescirptorSize() * 14;// TODO : offset 하드 코딩 해결
 
 	GET_SINGLE(Resources)->Get<Mesh>(L"Rectangle")->Render(gpuHandle);
 }

@@ -11,6 +11,7 @@ enum
 	MATERIAL_FLOAT_COUNT = 4,
 	MATERIAL_TEXTURE_COUNT = 4,
 	MATERIAL_VECTOR2_COUNT = 4,
+	MATERIAL_VECTOR4_COUNT = 4,
 };
 
 
@@ -21,6 +22,7 @@ struct Constant_MaterialParams
 	void SetFloat(uint8 index, float value) { floatParams[index] = value; }
 	void SetTexOn(uint8 index, int32 value) { texOnParams[index] = value; }
 	void SetVec2(uint8 index, Vec2 value) { vec2Params[index] = value; }
+	void SetVec4(uint8 index, Vec4 value) { vec4Params[index] = value; }
 
 	void SetAllInt(int32 value)
 	{
@@ -40,10 +42,17 @@ struct Constant_MaterialParams
 			vec2Params[i] = value;
 	}
 
+	void SetAllVec4(Vec4 value)
+	{
+		for (int i = 0; i < MATERIAL_VECTOR4_COUNT; ++i)
+			vec4Params[i] = value;
+	}
+
 	array<int32, MATERIAL_INT_COUNT> intParams;
 	array<float, MATERIAL_FLOAT_COUNT> floatParams;
 	array<int32, MATERIAL_TEXTURE_COUNT> texOnParams;
 	array<Vec2, MATERIAL_VECTOR2_COUNT> vec2Params;
+	array<Vec4, MATERIAL_VECTOR4_COUNT> vec4Params;
 };
 
 class Material : public Object
@@ -69,9 +78,15 @@ public:
 		_params.SetVec2(index, value); 
 	}
 
+	void SetVec4(uint8 index, Vec4 value)
+	{
+		_params.SetVec4(index, value);
+	}
+
 	void PushGraphicsData();
 	void PushComputeData();
 	void Dispatch(uint32 x, uint32 y, uint32 z);
+
 	Material();
 	virtual ~Material();
 };

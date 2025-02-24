@@ -6,6 +6,7 @@
 #include "GameObject.h"
 #include "MeshRenderer.h"
 #include "Material.h"
+#include "ParticleSystem.h"
 #include "Engine.h"
 
 Matrix Camera::S_MatView;
@@ -61,22 +62,31 @@ void Camera::SortGameObject()
 
 	_vecForward.clear();
 	_vecDeferred.clear();
+	_vecParticle.clear();
 
 	for (auto& gameObject : gameObjects)
 	{
-		if (gameObject->GetMeshRenderer() == nullptr) continue;
+		if (gameObject->GetMeshRenderer() == nullptr && gameObject->GetParticleSystem() == nullptr) continue;
 
 		if(IsCulled(gameObject->GetLayerIndex())) continue;
 
-		SHADER_TYPE shaderType = gameObject->GetMeshRenderer()->GetMaterial()->GetShader()->GetShaderType();
-		switch (shaderType)
+		if (gameObject->GetMeshRenderer())
 		{
-		case SHADER_TYPE::FORWARD:
-			_vecForward.emplace_back(gameObject);
-			break;
-		case SHADER_TYPE::DEFERRED:
-			_vecDeferred.emplace_back(gameObject);
-			break;
+			SHADER_TYPE shaderType = gameObject->GetMeshRenderer()->GetMaterial()->GetShader()->GetShaderType();
+			switch (shaderType)
+			{
+			case SHADER_TYPE::FORWARD:
+				_vecForward.emplace_back(gameObject);
+				break;
+			case SHADER_TYPE::DEFERRED:
+				_vecDeferred.emplace_back(gameObject);
+				break;
+			}
+		}
+		else
+		{
+			if(gameObject->GetParticleSystem())
+				_vecParticle.emplace_back(gameObject);
 		}
 	}
 }
@@ -89,6 +99,11 @@ void Camera::Render_Forward()
 	for (auto& gameObject : _vecForward)
 	{
 		gameObject->GetMeshRenderer()->Render();
+	}
+
+	for (auto& gameObject : _vecParticle)
+	{
+		gameObject->GetParticleSystem()->Render();
 	}
 }
 

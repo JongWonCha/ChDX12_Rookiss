@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "RenderTargetGroup.h"
 #include "Engine.h"
-#include "Device.h"+
+#include "Device.h"
 #include "Texture.h"
 #include "SingleDescriptorAllocator.h"
 
@@ -27,7 +27,7 @@ void RenderTargetGroup::Create(RENDER_TARGET_GROUP_TYPE groupType, vector<Render
 		return;
 	}
 
-	for (int i = 0; i < _rtCount; ++i)
+	for (uint32 i = 0; i < _rtCount; ++i)
 	{
 		_targetToResource[i] = CD3DX12_RESOURCE_BARRIER::Transition(_rtVec[i].target->GetTextureHandle()->pTexResource.Get(),
 			D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_COMMON);

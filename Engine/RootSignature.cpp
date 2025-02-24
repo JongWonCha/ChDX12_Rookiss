@@ -20,7 +20,7 @@ void RootSignature::CreateGraphicsRootSignature()
 	// constant, descriptor, table
 	CD3DX12_DESCRIPTOR_RANGE range[2] = {};
 	range[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 4, 1); // b1 ~ b4
-	range[1].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 5, 0); // t0 ~ t4
+	range[1].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 10, 0); // t0 ~ t9
 
 	CD3DX12_ROOT_PARAMETER param[2] = {};
 	param[0].InitAsConstantBufferView(static_cast<uint32>(0)); // b0

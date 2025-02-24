@@ -9,6 +9,7 @@
 #include "Camera.h"
 #include "Transform.h"
 #include "Light.h"
+#include "ParticleSystem.h"
 
 #include "TestCameraScript.h"
 #include "Resources.h"
@@ -182,7 +183,7 @@ shared_ptr<Scene> SceneManager::LoadTestScene()
 		
 		sphere->AddComponent(make_shared<Transform>());
 		sphere->GetTransform()->SetLocalScale(Vec3(100.f, 100.f, 100.f));
-		sphere->GetTransform()->SetLocalPosition(Vec3(0.f, 0.f, 150.f));
+		sphere->GetTransform()->SetLocalPosition(Vec3(0.f, 0.f, 200.f));
 		shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
 		{
 			shared_ptr<Mesh> sphereMesh = GET_SINGLE(Resources)->LoadSphereMesh();
@@ -274,8 +275,17 @@ shared_ptr<Scene> SceneManager::LoadTestScene()
 
 		scene->AddGameObject(light);
 	}
-//#pragma endregion
+#pragma endregion
 
+#pragma region ParticleSystem
+	{
+		shared_ptr<GameObject> particle = make_shared<GameObject>();
+		particle->AddComponent(make_shared<Transform>());
+		particle->AddComponent(make_shared<ParticleSystem>());
+		particle->GetTransform()->SetLocalPosition(Vec3(0.f, 0.f, 100.f));
+		scene->AddGameObject(particle);
+	}
+#pragma endregion
 
 
 	return scene;

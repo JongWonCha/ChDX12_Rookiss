@@ -215,7 +215,7 @@ void Mesh::CreateIndexBuffer(const vector<uint32>& vec)
 	}*/
 }
 
-void Mesh::Render(D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle)
+void Mesh::Render(D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle, uint32 instanceCount)
 {
 	//shared_ptr<DescriptorPool> dp = GEngine->GetDescriptorPool();
 	//shared_ptr<ConstantBuffer> cbTransform = GEngine->GetCBByType(CONSTANT_BUFFER_TYPE::TRANSFORM);
@@ -289,10 +289,10 @@ void Mesh::Render(D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle)
 
 	GRAPHICS_CMD_LIST->SetGraphicsRootDescriptorTable(1, gpuHandle);
 
-	GRAPHICS_CMD_LIST->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	//GRAPHICS_CMD_LIST->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	GRAPHICS_CMD_LIST->IASetVertexBuffers(0, 1, &_vertexBufferView);
 	GRAPHICS_CMD_LIST->IASetIndexBuffer(&_indexBufferView);
-	GRAPHICS_CMD_LIST->DrawIndexedInstanced(_indexCount, 1, 0, 0, 0);
+	GRAPHICS_CMD_LIST->DrawIndexedInstanced(_indexCount, instanceCount, 0, 0, 0);
 	//CMD_LIST->DrawInstanced(_vertexCount, 1, 0, 0);
 }
 
