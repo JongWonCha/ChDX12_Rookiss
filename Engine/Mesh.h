@@ -2,6 +2,8 @@
 #include "Object.h"
 
 class Material;
+class InstancingBuffer;
+
 class Mesh : public Object
 {
 public:
@@ -9,6 +11,7 @@ public:
 	void CreateVertexBuffer(const vector<Vertex>& vec);
 	void CreateIndexBuffer(const vector<uint32>& vec);
 	void Render(D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle, uint32 instanceCount = 1);
+	void Render(D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle, shared_ptr<InstancingBuffer>& buffer);
 
 
 	UINT64 Fence();

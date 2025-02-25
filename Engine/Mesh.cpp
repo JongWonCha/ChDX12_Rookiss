@@ -3,6 +3,7 @@
 #include "Engine.h"
 #include "Transform.h"
 #include "Material.h"
+#include "InstancingBuffer.h"
 
 Mesh::Mesh() : Object(OBJECT_TYPE::MESH)
 {
@@ -294,6 +295,18 @@ void Mesh::Render(D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle, uint32 instanceCount)
 	GRAPHICS_CMD_LIST->IASetIndexBuffer(&_indexBufferView);
 	GRAPHICS_CMD_LIST->DrawIndexedInstanced(_indexCount, instanceCount, 0, 0, 0);
 	//CMD_LIST->DrawInstanced(_vertexCount, 1, 0, 0);
+}
+
+void Mesh::Render(D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle, shared_ptr<InstancingBuffer>& buffer)
+{
+	// commit은 이미 한 상태
+	GRAPHICS_CMD_LIST->SetGraphicsRootDescriptorTable(1, gpuHandle);
+
+	D3D12_VERTEX_BUFFER_VIEW bufferViews[] = { _vertexBufferView, buffer->GetBufferView() };
+	GRAPHICS_CMD_LIST->IASetVertexBuffers(0, 2, bufferViews);
+	GRAPHICS_CMD_LIST->IASetIndexBuffer(&_indexBufferView);
+
+	GRAPHICS_CMD_LIST->DrawIndexedInstanced(_indexCount, buffer->GetCount(), 0, 0, 0);
 }
 
 UINT64 Mesh::Fence()

@@ -466,4 +466,16 @@ void Resources::CreateDefaultMaterial()
 
 		Add<Material>(L"ComputeParticle", material);
 	}
+
+	// Instance
+	{
+		shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"Deferred");
+		shared_ptr<Texture> base = GET_SINGLE(Resources)->Load<Texture>(L"base", L"..\\Resources\\Texture\\cliff_base.dds");
+		shared_ptr<Texture> normal = GET_SINGLE(Resources)->Load<Texture>(L"normal", L"..\\Resources\\Texture\\cliff_normal.dds");
+		shared_ptr<Material> material = make_shared<Material>();
+		material->SetShader(shader);
+		material->SetTexture(0, base);
+		material->SetTexture(1, normal);
+		Add<Material>(L"GameObject", material);
+	}
 }

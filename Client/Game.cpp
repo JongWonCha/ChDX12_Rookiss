@@ -3,6 +3,7 @@
 #include "Engine.h"
 
 #include "SceneManager.h"
+#include "InstancingManager.h"
 
 
 
@@ -75,6 +76,7 @@ void Game::Update()
 	CONSTANTBUFFER(CONSTANT_BUFFER_TYPE::LIGHT)->Reset();
 	CONSTANTBUFFER(CONSTANT_BUFFER_TYPE::TRANSFORM)->Reset();
 	CONSTANTBUFFER(CONSTANT_BUFFER_TYPE::MATERIAL)->Reset();
+	GET_SINGLE(InstancingManager)->ClearBuffer();
 }
 
 void Game::ResizeWindow(int32 width, int32 height)
