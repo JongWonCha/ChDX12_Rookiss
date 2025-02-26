@@ -33,6 +33,10 @@ using namespace Microsoft::WRL;
 #include "DirectXTex/DirectXTex.h"
 #include "DirectXTex/DirectXTex.inl"
 
+#include <Assimp/Importer.hpp>
+#include <Assimp/scene.h>
+#include <Assimp/postprocess.h>
+
 // lib
 #pragma comment(lib, "d3d12")
 #pragma comment(lib, "dxgi")
@@ -43,6 +47,12 @@ using namespace Microsoft::WRL;
 #pragma comment(lib, "DirectXTex\\DirectXTex_debug.lib")
 #else
 #pragma comment(lib, "DirectXTex\\DirectXTex.lib")
+#endif
+
+#ifdef _DEBUG
+#pragma comment(lib, "Assimp\\assimp_debug.lib")
+#else
+#pragma comment(lib, "Assimp\\assimp.lib")
 #endif
 
 // typedef

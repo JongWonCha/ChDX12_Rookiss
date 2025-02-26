@@ -11,6 +11,7 @@
 #include "Camera.h"
 #include "Light.h"
 #include "Resources.h"
+#include "AssimpManager.h"
 
 
 void Engine::Init(const WindowInfo& window)
@@ -55,6 +56,9 @@ void Engine::Init(const WindowInfo& window)
 	GET_SINGLE(Resources)->Init();
 
 	ResizeWindow(window.width, window.height);
+
+	shared_ptr<AssimpManager> assimpManager = make_shared<AssimpManager>();
+	assimpManager->Import("name", "..\\Resources\\Fbx\\char.fbx");
 }
 
 void Engine::Update()

@@ -179,19 +179,48 @@ shared_ptr<Scene> SceneManager::LoadTestScene()
 
 #pragma region Cube
 	{
-		for (int i = 0; i < 50; ++i)
+		//for (int i = 0; i < 50; ++i)
+		//{
+		//	shared_ptr<GameObject> sphere = make_shared<GameObject>();
+
+		//	sphere->AddComponent(make_shared<Transform>());
+		//	sphere->GetTransform()->SetLocalScale(Vec3(25.f, 25.f, 25.f));
+		//	sphere->GetTransform()->SetLocalPosition(Vec3(-300.f + (i * 20.f), 0.f, 400.f));
+		//	shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
+		//	{
+		//		shared_ptr<Mesh> sphereMesh = GET_SINGLE(Resources)->LoadSphereMesh();
+		//		meshRenderer->SetMesh(sphereMesh);
+		//	}
+		//	{
+		//		shared_ptr<Material> material = GET_SINGLE(Resources)->Get<Material>(L"GameObject");
+		//		material->SetInt(0, 1); // 인스턴스 모드 On
+		//		meshRenderer->SetMaterial(material);
+		//	}
+		//	sphere->AddComponent(meshRenderer);
+		//	scene->AddGameObject(sphere);
+		//}
+		for (int32 i = 0; i < 100; ++i)
 		{
 			shared_ptr<GameObject> sphere = make_shared<GameObject>();
 
 			sphere->AddComponent(make_shared<Transform>());
-			sphere->GetTransform()->SetLocalScale(Vec3(25.f, 25.f, 25.f));
+			sphere->GetTransform()->SetLocalScale(Vec3(1.f, 1.f, 1.f));
 			sphere->GetTransform()->SetLocalPosition(Vec3(-300.f + (i * 20.f), 0.f, 400.f));
 			shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
 			{
-				shared_ptr<Mesh> sphereMesh = GET_SINGLE(Resources)->LoadSphereMesh();
+				shared_ptr<Mesh> sphereMesh = GET_SINGLE(Resources)->Get<Mesh>(L"ass");
 				meshRenderer->SetMesh(sphereMesh);
 			}
 			{
+				/*shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"Deferred");
+				shared_ptr<Texture> base = GET_SINGLE(Resources)->Load<Texture>(L"base", L"..\\Resources\\Texture\\cliff_base.dds");
+				shared_ptr<Texture> normal = GET_SINGLE(Resources)->Load<Texture>(L"normal", L"..\\Resources\\Texture\\cliff_normal.dds");
+				shared_ptr<Material> material = make_shared<Material>();
+				material->SetShader(shader);
+				material->SetTexture(0, base);
+				material->SetTexture(1, normal);
+				meshRenderer->SetMaterial(material);*/
+
 				shared_ptr<Material> material = GET_SINGLE(Resources)->Get<Material>(L"GameObject");
 				material->SetInt(0, 1); // 인스턴스 모드 On
 				meshRenderer->SetMaterial(material);
