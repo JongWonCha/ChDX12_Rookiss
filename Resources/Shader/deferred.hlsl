@@ -24,6 +24,8 @@ struct VS_OUT
     float3 viewNormal : NORMAL;
     float3 viewTangent : TANGENT;
     float3 viewBinormal : BINORMAL;
+    float3 worldPos : WORLDPOSITION;
+    float3 worldNormal : WORLDNORMAL;
 };
 
 VS_OUT VS_Main(VS_IN input)
@@ -51,7 +53,10 @@ VS_OUT VS_Main(VS_IN input)
         output.viewNormal = normalize(mul(float4(input.normal, 0.f), g_matWV).xyz);
         output.viewTangent = normalize(mul(float4(input.tangent, 0.f), g_matWV).xyz);
         output.viewBinormal = normalize(cross(output.viewTangent, output.viewNormal));
+       
     }
+    output.worldPos = mul(float4(input.pos, 1.f), g_matWorld).xyz;
+    output.worldNormal = normalize(mul(float4(input.normal, 1.f), g_matWorld).xyz);
     return output;
 }
 
@@ -71,6 +76,7 @@ PS_OUT PS_Main(VS_OUT input)
         color = g_tex_0.Sample(g_sam_0, input.uv);
 
     float3 viewNormal = input.viewNormal;
+    float3 worldNormal = normalize(input.worldNormal);
     if (g_tex_on_1)
     {
         // [0,255] 범위에서 [0,1]로 변환
@@ -79,11 +85,17 @@ PS_OUT PS_Main(VS_OUT input)
         tangentSpaceNormal = (tangentSpaceNormal - 0.5f) * 2.f;
         float3x3 matTBN = { input.viewTangent, input.viewBinormal, input.viewNormal };
         viewNormal = normalize(mul(tangentSpaceNormal, matTBN));
-    }
+        worldNormal = normalize(mul(float4(tangentSpaceNormal, 1.f), g_matWorld));
 
+    }
+    float3 toEyeW = normalize(input.worldPos - g_matViewInv[3].xyz);
     output.position = float4(input.viewPos.xyz, 0.f);
+    //output.position = float4(toEyeW.xyz, 0.f);
     output.normal = float4(viewNormal.xyz, 0.f);
-    output.color = color;
+    //output.normal = float4(viewNormal.xyz, 0.f);
+    float3 r = reflect(toEyeW, viewNormal.xyz);
+    //output.color = color;
+    output.color = gCubeMap.Sample(g_sam_1, r);
 
     return output;
 }

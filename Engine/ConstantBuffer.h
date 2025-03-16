@@ -1,8 +1,8 @@
 #pragma once
 
-enum class CONSTANT_BUFFER_TYPE
+enum class CONSTANT_BUFFER_TYPE : uint8
 {
-	LIGHT,
+	LIGHT = 0,
 	TRANSFORM,
 	MATERIAL,
 	END

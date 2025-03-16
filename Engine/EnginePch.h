@@ -144,9 +144,17 @@ struct Constant_TransformParams
 {
 	Matrix matWorld;
 	Matrix matView;
+	Matrix matViewInv;
 	Matrix matProjection;
 	Matrix matWV;
 	Matrix matWVP;
+};
+
+enum
+{
+	CONSTANT_LIGHT = 0,
+	CONSTANT_TRANSFORM,
+	CONSTANT_MATERIAL,
 };
 
 extern unique_ptr<Engine> GEngine;

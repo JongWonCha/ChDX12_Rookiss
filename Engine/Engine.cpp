@@ -43,9 +43,9 @@ void Engine::Init(const WindowInfo& window)
 	_rootSignature->Init();
 	_graphicsDescPool->Init(_device->GetDevice(), 256 * 9); // 오브젝트 갯수 * 오브젝트 당 넘겨줄 레지스터 갯수(b1 ~ b4, t0 ~ t4)
 	_computeDescPool->Init(_device->GetDevice(), 20 * 5);
-	_constantBuffers[0]->Init(sizeof(Constant_LightParams), 1);
-	_constantBuffers[1]->Init(sizeof(Constant_TransformParams), 256);
-	_constantBuffers[2]->Init(sizeof(Constant_MaterialParams), 256);
+	_constantBuffers[static_cast<uint8>(CONSTANT_BUFFER_TYPE::LIGHT)]->Init(sizeof(Constant_LightParams), 256);
+	_constantBuffers[static_cast<uint8>(CONSTANT_BUFFER_TYPE::TRANSFORM)]->Init(sizeof(Constant_TransformParams), 256);
+	_constantBuffers[static_cast<uint8>(CONSTANT_BUFFER_TYPE::MATERIAL)]->Init(sizeof(Constant_MaterialParams), 256);
 	_singleDescriptorAllocator->Init(4096, SWAP_CHAIN_BUFFER_COUNT * (1 + RENDER_TARGET_G_BUFFER_GROUP_MEMBER_COUNT + RENDER_TARGET_LIGHTING_GROUP_MEMBER_COUNT), 1, D3D12_DESCRIPTOR_HEAP_FLAG_NONE);
 	//_depthStencilBuffer->Init(window);
 

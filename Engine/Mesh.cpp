@@ -288,7 +288,7 @@ void Mesh::Render(D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle, uint32 instanceCount)
 		D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV
 	);*/
 
-	GRAPHICS_CMD_LIST->SetGraphicsRootDescriptorTable(1, gpuHandle);
+	GRAPHICS_CMD_LIST->SetGraphicsRootDescriptorTable(2, gpuHandle);
 
 	//GRAPHICS_CMD_LIST->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	GRAPHICS_CMD_LIST->IASetVertexBuffers(0, 1, &_vertexBufferView);
@@ -300,7 +300,7 @@ void Mesh::Render(D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle, uint32 instanceCount)
 void Mesh::Render(D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle, shared_ptr<InstancingBuffer>& buffer)
 {
 	// commit은 이미 한 상태
-	GRAPHICS_CMD_LIST->SetGraphicsRootDescriptorTable(1, gpuHandle);
+	GRAPHICS_CMD_LIST->SetGraphicsRootDescriptorTable(2, gpuHandle);
 
 	D3D12_VERTEX_BUFFER_VIEW bufferViews[] = { _vertexBufferView, buffer->GetBufferView() };
 	GRAPHICS_CMD_LIST->IASetVertexBuffers(0, 2, bufferViews);

@@ -48,6 +48,7 @@ void Transform::PushData()
 	Constant_TransformParams transformParams = {};
 	transformParams.matWorld = _matWorld;
 	transformParams.matView = Camera::S_MatView;
+	transformParams.matViewInv = Camera::S_MatViewInv;
 	transformParams.matProjection = Camera::S_MatProjection;
 	transformParams.matWV = _matWorld * Camera::S_MatView;
 	transformParams.matWVP = _matWorld * Camera::S_MatView * Camera::S_MatProjection;

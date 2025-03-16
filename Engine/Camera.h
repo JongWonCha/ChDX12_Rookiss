@@ -46,6 +46,7 @@ private:
 	float _scale = 1.f;
 
 	Matrix _matView = {};
+	Matrix _matViewInv = {};
 	Matrix _matProjection = {};
 
 	uint32 _cullingMask = 0;// 비트와이즈 연산으로 레이어를 체크할 것이기 때문에 uint32로 선언, 비트 값이 0이면 렌더링 함.
@@ -58,6 +59,7 @@ private:
 public:
 	// temp
 	static Matrix S_MatView;
+	static Matrix S_MatViewInv;
 	static Matrix S_MatProjection;
 };
 

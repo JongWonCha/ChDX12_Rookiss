@@ -129,6 +129,14 @@ void Scene::PushLightData()
 		lightParams.lightCount++;
 	}
 	CONSTANTBUFFER(CONSTANT_BUFFER_TYPE::LIGHT)->SetGlobalData(&lightParams, sizeof(lightParams));
+	shared_ptr<Texture> skyMap = GET_SINGLE(Resources)->Get<Texture>(L"skyMap");
+
+	D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle = {};
+	D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle = {};
+	GRAPHICS_DESC_POOL->AllocDescriptorTable(&cpuHandle, &gpuHandle, 1);
+	DEVICE->CopyDescriptorsSimple(1, cpuHandle, *skyMap->GetSRVHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+
+	GRAPHICS_CMD_LIST->SetGraphicsRootDescriptorTable(1, gpuHandle);
 }
 
 void Scene::AddGameObject(shared_ptr<GameObject> gameObject)

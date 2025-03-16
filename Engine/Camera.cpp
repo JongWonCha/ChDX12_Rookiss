@@ -11,6 +11,7 @@
 #include "InstancingManager.h"
 
 Matrix Camera::S_MatView;
+Matrix Camera::S_MatViewInv;
 Matrix Camera::S_MatProjection;
 
 Camera::Camera() : Component(COMPONENT_TYPE::CAMERA)
@@ -23,7 +24,9 @@ Camera::~Camera()
 
 void Camera::FinalUpdate()
 {
-	_matView = GetTransform()->GetLocalToWorldMatrix().Invert();
+	//auto a = GetTransform()->GetLocalToWorldMatrix();
+	_matViewInv = GetTransform()->GetLocalToWorldMatrix();
+	_matView = _matViewInv.Invert();
 
 	float width = static_cast<float>(GEngine->GetWindow().width);
 	float height = static_cast<float>(GEngine->GetWindow().height);
@@ -95,6 +98,7 @@ void Camera::SortGameObject()
 void Camera::Render_Forward()
 {
 	S_MatView = _matView;
+	S_MatViewInv = _matViewInv;
 	S_MatProjection = _matProjection;
 
 	GET_SINGLE(InstancingManager)->Render(_vecForward);
@@ -113,6 +117,7 @@ void Camera::Render_Forward()
 void Camera::Render_Deferred()
 {
 	S_MatView = _matView;
+	S_MatViewInv = _matViewInv;
 	S_MatProjection = _matProjection;
 
 	GET_SINGLE(InstancingManager)->Render(_vecDeferred);

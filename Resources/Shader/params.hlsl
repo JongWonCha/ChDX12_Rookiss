@@ -30,6 +30,7 @@ cbuffer TRANSFORM_PARAMS : register(b1)
 {
     row_major matrix g_matWorld;
     row_major matrix g_matView;
+    row_major matrix g_matViewInv;
     row_major matrix g_matProjection;
     row_major matrix g_matWV;
     row_major matrix g_matWVP;
@@ -59,12 +60,15 @@ cbuffer MATERIAL_PARAMS : register(b2)
     float4 g_vec4_3;
 };
 
-Texture2D g_tex_0 : register(t0);
-Texture2D g_tex_1 : register(t1);
-Texture2D g_tex_2 : register(t2);
-Texture2D g_tex_3 : register(t3);
-Texture2D g_tex_4 : register(t4);
+Texture2D g_tex_0 : register(t1);
+Texture2D g_tex_1 : register(t2);
+Texture2D g_tex_2 : register(t3);
+Texture2D g_tex_3 : register(t4);
+Texture2D g_tex_4 : register(t5);
 
 SamplerState g_sam_0 : register(s0);
+SamplerState g_sam_1 : register(s1);
+
+TextureCube gCubeMap : register(t0);
 
 #endif

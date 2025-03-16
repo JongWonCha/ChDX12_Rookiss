@@ -14,6 +14,7 @@ private:
 
 private:
 	ComPtr<ID3D12RootSignature> _graphicsRootSignature;
+	array<D3D12_STATIC_SAMPLER_DESC, 2> _samplerDescArray;
 	D3D12_STATIC_SAMPLER_DESC	_samplerDesc;
 
 	ComPtr<ID3D12RootSignature> _computeRootSignature;

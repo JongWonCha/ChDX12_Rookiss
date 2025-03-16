@@ -8,12 +8,21 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b09023a3-e936-4fac-9b14-39a22f998993" name="변경" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.ChDX12_Rookiss/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.ChDX12_Rookiss/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Engine/Engine.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Engine.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/Camera.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Camera.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/Camera.h" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Camera.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Engine/Engine.vcxproj" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Engine.vcxproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Engine/Input.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Manager/Input.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Engine/Input.h" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Manager/Input.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Engine/TestCameraScript.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/TestCameraScript.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/EnginePch.h" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/EnginePch.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/Mesh.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Mesh.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/RootSignature.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/RootSignature.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/RootSignature.h" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/RootSignature.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/Scene.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Scene.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/SceneManager.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/SceneManager.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/Shader.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Shader.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/Texture.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Texture.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/Transform.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Transform.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/Shader/deferred.hlsl" beforeDir="false" afterPath="$PROJECT_DIR$/Resources/Shader/deferred.hlsl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/Shader/params.hlsl" beforeDir="false" afterPath="$PROJECT_DIR$/Resources/Shader/params.hlsl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/Shader/skybox.hlsl" beforeDir="false" afterPath="$PROJECT_DIR$/Resources/Shader/skybox.hlsl" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -101,6 +110,7 @@
       <workItem from="1739247930563" duration="2246000" />
       <workItem from="1739633246667" duration="429000" />
       <workItem from="1739633688704" duration="450000" />
+      <workItem from="1741550711932" duration="26000" />
     </task>
     <servers />
   </component>
