@@ -200,36 +200,36 @@ shared_ptr<Scene> SceneManager::LoadTestScene()
 		//	sphere->AddComponent(meshRenderer);
 		//	scene->AddGameObject(sphere);
 		//}
-		for (int32 i = 0; i < 1; ++i)
-		{
-			shared_ptr<GameObject> sphere = make_shared<GameObject>();
+		//for (int32 i = 0; i < 1; ++i)
+		//{
+		//	shared_ptr<GameObject> sphere = make_shared<GameObject>();
 
-			sphere->AddComponent(make_shared<Transform>());
-			sphere->GetTransform()->SetLocalScale(Vec3(100.f, 100.f, 100.f));
-			sphere->GetTransform()->SetLocalPosition(Vec3(0.f, 0.f, 100.f));
-			shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
-			{
-				//shared_ptr<Mesh> sphereMesh = GET_SINGLE(Resources)->Get<Mesh>(L"ass");
-				shared_ptr<Mesh> sphereMesh = GET_SINGLE(Resources)->LoadSphereMesh();
-				meshRenderer->SetMesh(sphereMesh);
-			}
-			{
-				shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"Deferred");
-				shared_ptr<Texture> base = GET_SINGLE(Resources)->Load<Texture>(L"base", L"..\\Resources\\Texture\\cliff_base.dds");
-				shared_ptr<Texture> normal = GET_SINGLE(Resources)->Load<Texture>(L"normal", L"..\\Resources\\Texture\\cliff_normal.dds");
-				shared_ptr<Material> material = make_shared<Material>();
-				material->SetShader(shader);
-				material->SetTexture(0, base);
-				material->SetTexture(1, normal);
-				meshRenderer->SetMaterial(material);
+		//	sphere->AddComponent(make_shared<Transform>());
+		//	sphere->GetTransform()->SetLocalScale(Vec3(100.f, 100.f, 100.f));
+		//	sphere->GetTransform()->SetLocalPosition(Vec3(0.f, 0.f, 100.f));
+		//	shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
+		//	{
+		//		//shared_ptr<Mesh> sphereMesh = GET_SINGLE(Resources)->Get<Mesh>(L"ass");
+		//		shared_ptr<Mesh> sphereMesh = GET_SINGLE(Resources)->LoadSphereMesh();
+		//		meshRenderer->SetMesh(sphereMesh);
+		//	}
+		//	{
+		//		shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"Deferred");
+		//		shared_ptr<Texture> base = GET_SINGLE(Resources)->Load<Texture>(L"base", L"..\\Resources\\Texture\\cliff_base.dds");
+		//		shared_ptr<Texture> normal = GET_SINGLE(Resources)->Load<Texture>(L"normal", L"..\\Resources\\Texture\\cliff_normal.dds");
+		//		shared_ptr<Material> material = make_shared<Material>();
+		//		material->SetShader(shader);
+		//		material->SetTexture(0, base);
+		//		material->SetTexture(1, normal);
+		//		meshRenderer->SetMaterial(material);
 
-				//shared_ptr<Material> material = GET_SINGLE(Resources)->Get<Material>(L"GameObject");
-				//material->SetInt(0, 1); // 인스턴스 모드 On
-				//meshRenderer->SetMaterial(material);
-			}
-			sphere->AddComponent(meshRenderer);
-			scene->AddGameObject(sphere);
-		}
+		//		//shared_ptr<Material> material = GET_SINGLE(Resources)->Get<Material>(L"GameObject");
+		//		//material->SetInt(0, 1); // 인스턴스 모드 On
+		//		//meshRenderer->SetMaterial(material);
+		//	}
+		//	sphere->AddComponent(meshRenderer);
+		//	scene->AddGameObject(sphere);
+		//}
 	}
 #pragma endregion
 
@@ -259,7 +259,6 @@ shared_ptr<Scene> SceneManager::LoadTestScene()
 	{
 		shared_ptr<GameObject> light = make_shared<GameObject>();
 		light->AddComponent(make_shared<Transform>());
-		//light->GetTransform()->SetLocalPosition(Vec3(0.f, 150.f, 150.f));
 		light->AddComponent(make_shared<Light>());
 		light->GetLight()->SetLightDirection(Vec3(1.f, 0.f, 1.f));
 		light->GetLight()->SetLightType(LIGHT_TYPE::DIRECTIONAL_LIGHT);
@@ -306,15 +305,15 @@ shared_ptr<Scene> SceneManager::LoadTestScene()
 //	}
 //#pragma endregion
 
-//#pragma region ParticleSystem
-//	{
-//		shared_ptr<GameObject> particle = make_shared<GameObject>();
-//		particle->AddComponent(make_shared<Transform>());
-//		particle->AddComponent(make_shared<ParticleSystem>());
-//		particle->GetTransform()->SetLocalPosition(Vec3(0.f, 0.f, 100.f));
-//		scene->AddGameObject(particle);
-//	}
-//#pragma endregion
+#pragma region ParticleSystem
+	{
+		shared_ptr<GameObject> particle = make_shared<GameObject>();
+		particle->AddComponent(make_shared<Transform>());
+		particle->AddComponent(make_shared<ParticleSystem>());
+		particle->GetTransform()->SetLocalPosition(Vec3(0.f, 0.f, 100.f));
+		scene->AddGameObject(particle);
+	}
+#pragma endregion
 
 
 	return scene;

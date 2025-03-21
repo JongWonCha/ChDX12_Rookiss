@@ -40,16 +40,7 @@ public:
 
 private:
 	TEXTURE_TYPE _textureType = TEXTURE_TYPE::SRV;
-	//ScratchImage					_image;
-	//ComPtr<ID3D12Resource>			_tex2D;
-
-	//shared_ptr<SingleDescriptorAllocator> _singleDescAllocator;
-
-	//unordered_map<string, TEXTURE_HANDLE*> stringTexMap;
 
 	shared_ptr<TEXTURE_HANDLE>		_textureHandle = nullptr;
-
-	//ComPtr<ID3D12DescriptorHeap>	_srvHeap;
-	//D3D12_CPU_DESCRIPTOR_HANDLE		_srvHandle;
 };
 

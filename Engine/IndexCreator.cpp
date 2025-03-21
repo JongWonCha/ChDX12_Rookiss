@@ -22,7 +22,6 @@ DWORD IndexCreator::Alloc()
 	DWORD result = -1;
 	if (_allocatedCount >= _maxNum) return result;
 
-	
 	result = _indexTable[_allocatedCount];
 	_allocatedCount++;
 	
